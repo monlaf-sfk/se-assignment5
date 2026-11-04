@@ -19,4 +19,6 @@ export interface AvailabilityResult {
   available: boolean;
   reason: string;
   conflict?: Booking;
+  /** Set on success so the UI shows the duration the decision was made for. */
+  duration?: number;
 }

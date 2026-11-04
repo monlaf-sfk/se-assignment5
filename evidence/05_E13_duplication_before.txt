@@ -1,0 +1,27 @@
+# E13 duplication count — BEFORE refactor (app/ at commit 86c6e3d)
+
+$ grep -rnF "end - start" app/src (non-test)
+app/src/lib/availability.ts:27:  const duration = end - start;
+
+$ grep -rnF "endMin - startMin" app/src (non-test)
+app/src/App.tsx:60:  const duration = startMin !== null && endMin !== null && endMin > startMin ? endMin - startMin : null;
+
+$ grep -rnF "> MAX_BOOKING_MINUTES" app/src (non-test)
+app/src/App.tsx:188:                  <span className={duration > MAX_BOOKING_MINUTES ? 'font-semibold text-red-600' : 'font-semibold text-slate-700'}>
+app/src/lib/availability.ts:28:  if (duration > MAX_BOOKING_MINUTES) {
+
+$ grep -rnF "duration !== null &&" app/src (non-test)
+app/src/App.tsx:187:                {duration !== null && (
+app/src/components/ResultBanner.tsx:29:            {duration !== null && ` (${duration} min)`}
+
+$ grep -rnF "split(' – ')" app/src (non-test)
+app/src/lib/availability.ts:23:      reason: `Start time must be after the current time (${formatRange(currentTime, currentTime).split(' – ')[0]}).`,
+
+$ grep -rnF "Candidate (blocked)" app/src (non-test)
+app/src/components/Timeline.tsx:110:          <span className="h-2.5 w-2.5 rounded-sm border-2 border-red-400 bg-red-200/70" /> Candidate (blocked)
+
+$ grep -nF "end - start" initial/booking.py
+30:    if end - start > 120:
+
+$ grep -n supabase app/package.json
+15:    "@supabase/supabase-js": "^2.57.4",

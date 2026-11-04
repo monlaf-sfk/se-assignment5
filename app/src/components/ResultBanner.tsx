@@ -3,10 +3,9 @@ import type { AvailabilityResult } from '@/types';
 
 interface Props {
   result: AvailabilityResult | null;
-  duration: number | null;
 }
 
-export function ResultBanner({ result, duration }: Props) {
+export function ResultBanner({ result }: Props) {
   if (!result) {
     return (
       <div className="flex items-center gap-3 rounded-2xl border border-dashed border-slate-200 bg-slate-50 p-4">
@@ -26,7 +25,7 @@ export function ResultBanner({ result, duration }: Props) {
           <p className="text-sm font-semibold text-emerald-800">Available</p>
           <p className="mt-0.5 text-sm text-emerald-700">
             {result.reason}
-            {duration !== null && ` (${duration} min)`}
+            {result.duration !== undefined && ` (${result.duration} min)`}
           </p>
         </div>
       </div>

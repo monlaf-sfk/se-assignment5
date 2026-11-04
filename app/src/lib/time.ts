@@ -18,6 +18,11 @@ export function hhmmToMinutes(hhmm: string): number | null {
   return h * 60 + m;
 }
 
+/** Single source for interval length: minutes, or null when either end is missing or end <= start. */
+export function durationOf(start: number | null, end: number | null): number | null {
+  return start !== null && end !== null && end > start ? end - start : null;
+}
+
 export function formatRange(start: number, end: number): string {
   return `${minutesToHHMM(start)} – ${minutesToHHMM(end)}`;
 }

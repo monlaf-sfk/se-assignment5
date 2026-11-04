@@ -2,11 +2,11 @@ import { useMemo, useState } from 'react';
 import { Building2, Clock3, RotateCcw } from 'lucide-react';
 import { EQUIPMENT_OPTIONS, SAMPLE_ROOMS } from '@/data';
 import type { AvailabilityResult } from '@/types';
-import { checkAvailability } from '@/lib/availability';
+import { checkAvailability, exceedsMaxDuration } from '@/lib/availability';
 import { filterRooms, hasSelectableRoom, parseAttendees } from '@/lib/filtering';
 import { RoomFilters } from '@/components/RoomFilters';
 import { EmptyState } from '@/components/EmptyState';
-import { hhmmToMinutes, MAX_BOOKING_MINUTES, minutesToHHMM } from '@/lib/time';
+import { durationOf, hhmmToMinutes, MAX_BOOKING_MINUTES, minutesToHHMM } from '@/lib/time';
 import { RoomCard } from '@/components/RoomCard';
 import { Timeline } from '@/components/Timeline';
 import { TimeInput } from '@/components/TimeInput';
@@ -57,7 +57,7 @@ function App() {
   const startError = startMin === null ? 'Invalid time' : undefined;
   const endError = endMin === null ? 'Invalid time' : undefined;
 
-  const duration = startMin !== null && endMin !== null && endMin > startMin ? endMin - startMin : null;
+  const duration = durationOf(startMin, endMin);
 
   // R1 fix: a result always belongs to the current inputs.
   // Any change of room or time clears it until the user presses Check again (F5, F3).
@@ -185,7 +185,7 @@ function App() {
                 <span>Max booking: {MAX_BOOKING_MINUTES} min</span>
                 <span>Day window: 00:00–24:00</span>
                 {duration !== null && (
-                  <span className={duration > MAX_BOOKING_MINUTES ? 'font-semibold text-red-600' : 'font-semibold text-slate-700'}>
+                  <span className={exceedsMaxDuration(duration) ? 'font-semibold text-red-600' : 'font-semibold text-slate-700'}>
                     Your duration: {duration} min
                   </span>
                 )}
@@ -194,7 +194,7 @@ function App() {
 
             {/* Result */}
             <div className="mt-4">
-              <ResultBanner result={result} duration={duration} />
+              <ResultBanner result={result} />
             </div>
 
             {/* Timeline */}

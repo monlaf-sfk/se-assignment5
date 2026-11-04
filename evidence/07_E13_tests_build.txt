@@ -1,0 +1,22 @@
+$ npm run typecheck
+> tsc --noEmit -p tsconfig.app.json
+
+$ npx vitest run
+
+ RUN  v1.6.1 /Users/rasulkerimzhanov/Desktop/university/software_e/assignment4/app
+
+ ✓ src/lib/roomSelection.test.ts  (2 tests) 1ms
+ ✓ src/lib/filtering.test.ts  (11 tests) 2ms
+ ✓ src/lib/availability.ai.test.ts  (15 tests) 3ms
+ ✓ src/lib/availability.test.ts  (19 tests) 2ms
+
+ Test Files  4 passed (4)
+      Tests  47 passed (47)
+   Start at  19:10:59
+   Duration  135ms (transform 54ms, setup 0ms, collect 86ms, tests 8ms, environment 0ms, prepare 153ms)
+
+$ npm run build
+dist/index.html                   0.71 kB │ gzip:  0.39 kB
+dist/assets/index--OvOhyrA.css   17.56 kB │ gzip:  4.04 kB
+dist/assets/index-4lpEY4ad.js   163.93 kB │ gzip: 51.92 kB
+✓ built in 653ms

@@ -1,5 +1,10 @@
 import type { AvailabilityResult, Room } from '@/types';
-import { formatRange, MAX_BOOKING_MINUTES, MAX_DAY, MIN_DAY } from './time';
+import { durationOf, formatRange, MAX_BOOKING_MINUTES, MAX_DAY, MIN_DAY, minutesToHHMM } from './time';
+
+/** AC2 — the only place that decides whether a duration is too long. Exactly 120 is allowed. */
+export function exceedsMaxDuration(duration: number): boolean {
+  return duration > MAX_BOOKING_MINUTES;
+}
 
 export interface CheckParams {
   room: Room;
@@ -13,19 +18,19 @@ export function checkAvailability({ room, start, end, currentTime }: CheckParams
     return { available: false, reason: 'Times must be within the same day (00:00–24:00).' };
   }
 
-  if (start >= end) {
+  const duration = durationOf(start, end); // null exactly when start >= end
+  if (duration === null) {
     return { available: false, reason: 'Start time must be earlier than end time.' };
   }
 
   if (start <= currentTime) {
     return {
       available: false,
-      reason: `Start time must be after the current time (${formatRange(currentTime, currentTime).split(' – ')[0]}).`,
+      reason: `Start time must be after the current time (${minutesToHHMM(currentTime)}).`,
     };
   }
 
-  const duration = end - start;
-  if (duration > MAX_BOOKING_MINUTES) {
+  if (exceedsMaxDuration(duration)) {
     return {
       available: false,
       reason: `Bookings cannot exceed ${MAX_BOOKING_MINUTES} minutes. Your request is ${duration} minutes.`,
@@ -52,5 +57,5 @@ export function checkAvailability({ room, start, end, currentTime }: CheckParams
     }
   }
 
-  return { available: true, reason: 'This time slot is available for booking.' };
+  return { available: true, reason: 'This time slot is available for booking.', duration };
 }

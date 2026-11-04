@@ -1,0 +1,29 @@
+# E13 duplication count — AFTER refactor
+
+$ grep -rnF "end - start" app/src (non-test)
+app/src/lib/time.ts:23:  return start !== null && end !== null && end > start ? end - start : null;
+
+$ grep -rnF "endMin - startMin" app/src (non-test)
+
+$ grep -rnF "> MAX_BOOKING_MINUTES" app/src (non-test)
+app/src/lib/availability.ts:6:  return duration > MAX_BOOKING_MINUTES;
+
+$ grep -rnF "duration !== null &&" app/src (non-test)
+app/src/App.tsx:187:                {duration !== null && (
+
+$ grep -rnF "split(' – ')" app/src (non-test)
+
+$ grep -rnF "Candidate (blocked)" app/src (non-test)
+
+$ grep -rnF "durationOf(" app/src (non-test)
+app/src/lib/availability.ts:21:  const duration = durationOf(start, end); // null exactly when start >= end
+app/src/App.tsx:60:  const duration = durationOf(startMin, endMin);
+app/src/lib/time.ts:22:export function durationOf(start: number | null, end: number | null): number | null {
+
+$ grep -rnF "exceedsMaxDuration(" app/src (non-test)
+app/src/App.tsx:188:                  <span className={exceedsMaxDuration(duration) ? 'font-semibold text-red-600' : 'font-semibold text-slate-700'}>
+app/src/lib/availability.ts:5:export function exceedsMaxDuration(duration: number): boolean {
+app/src/lib/availability.ts:33:  if (exceedsMaxDuration(duration)) {
+
+$ grep -n supabase app/package.json
+(no matches)

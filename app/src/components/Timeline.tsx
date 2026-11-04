@@ -107,7 +107,7 @@ export function Timeline({ room, candidateStart, candidateEnd, available }: Prop
           <span className="h-2.5 w-2.5 rounded-sm border-2 border-emerald-400 bg-emerald-200/70" /> Candidate (available)
         </span>
         <span className="inline-flex items-center gap-1.5">
-          <span className="h-2.5 w-2.5 rounded-sm border-2 border-red-400 bg-red-200/70" /> Candidate (blocked)
+          <span className="h-2.5 w-2.5 rounded-sm border-2 border-red-400 bg-red-200/70" /> Candidate (unavailable)
         </span>
       </div>
     </div>
