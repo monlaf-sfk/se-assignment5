@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Assignment #04 AI Evidence — Kerimzhanov Rassul</title>
+<style>
+  @page { size: A4; margin: 16mm 15mm 18mm 15mm; }
+  :root { --ink:#1b2430; --muted:#5b6675; --line:#d5dbe3; --soft:#f3f6f9; --accent:#0b6aa8; }
+  * { box-sizing: border-box; }
+  body { font-family: -apple-system, "Helvetica Neue", Arial, sans-serif; color: var(--ink); font-size: 10.3pt; line-height: 1.45; margin: 0; }
+  h1 { font-size: 19pt; margin: 0 0 4pt; }
+  h2 { font-size: 13.5pt; margin: 16pt 0 6pt; padding-bottom: 3pt; border-bottom: 2px solid var(--accent); break-after: avoid; }
+  h3 { font-size: 10.8pt; margin: 9pt 0 3pt; break-after: avoid; color: var(--accent); }
+  p { margin: 3pt 0 6pt; }
+  .sub { color: var(--muted); margin-bottom: 10pt; }
+  table { width: 100%; border-collapse: collapse; margin: 6pt 0 10pt; font-size: 9.3pt; }
+  th, td { border: 1px solid var(--line); padding: 4pt 6pt; vertical-align: top; text-align: left; }
+  th { background: var(--soft); }
+  tr { break-inside: avoid; }
+  code { font-family: Menlo, Consolas, monospace; font-size: 8.6pt; background: var(--soft); padding: 0 2pt; border-radius: 2pt; }
+  pre { font-family: Menlo, Consolas, monospace; font-size: 8pt; line-height: 1.35; background: var(--soft); border: 1px solid var(--line); border-left: 3px solid var(--accent); padding: 6pt 8pt; white-space: pre-wrap; break-inside: avoid; margin: 4pt 0 8pt; }
+  .fig { margin: 4pt 0 10pt; break-inside: avoid; }
+  .fig img { width: 100%; border: 1px solid var(--line); display: block; }
+  .fig .cap { font-size: 8.6pt; color: var(--muted); margin-top: 2pt; }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8pt; }
+  .decision { background: #eef7f0; border-left: 3px solid #2e8b57; padding: 5pt 8pt; margin: 4pt 0 8pt; break-inside: avoid; }
+  .pb { break-before: page; }
+  ul { margin: 2pt 0 6pt 16pt; padding: 0; }
+  li { margin: 1.5pt 0; }
+</style>
+</head>
+<body>
+
+<h1>AI Evidence — Assignment #04</h1>
+<div class="sub">Kerimzhanov Rassul (24B031844) · Smart Campus Room Availability Checker</div>
+
+<table>
+  <tr><th style="width:26%">Item</th><th>Value</th></tr>
+  <tr><td>AI tool and model</td><td>Claude Code (Anthropic CLI coding agent), model Claude Opus 5.5</td></tr>
+  <tr><td>Date</td><td>4 November 2026 (all exchanges below)</td></tr>
+  <tr><td>How it was used</td><td>Run in the terminal inside the project folder. The agent could read and edit files, run shell commands (npm, vitest, git) and drive a Firefox window for UI screenshots. Every step was a separate prompt from me; the agent committed after each step.</td></tr>
+  <tr><td>Permissions / data</td><td>Local project files only; no credentials or private data shared. Fictional room data.</td></tr>
+  <tr><td>Verification sources</td><td>My own test runs in my terminal, the browser (app on localhost), <code>git diff</code>, reading the changed code, saved outputs in <code>evidence/</code>.</td></tr>
+  <tr><td>Numbering</td><td>Continues my A3 evidence (E1–E8) with E9–E15.</td></tr>
+</table>
+
+<h2>Summary of exchanges</h2>
+<table>
+  <tr><th style="width:6%">#</th><th style="width:22%">Request</th><th>Output used</th><th style="width:27%">My decision</th></tr>
+  <tr><td>E9</td><td>Task 1: analysis and plan, no code</td><td>5 risks with file/line references, 9-step plan</td><td>Accepted R1–R5; <b>modified</b> plan item 2; item 6 partially</td></tr>
+  <tr><td>E10</td><td>Fix stale result (R1/F5)</td><td>Handlers that clear the result; room-selection test</td><td>Accepted; verified in browser (S5 vs S6) and 36/36 tests</td></tr>
+  <tr><td>E11</td><td>Equipment + pure <code>filterRooms</code> (F1–F4)</td><td>Model, 5-room catalog, filter module, 11 tests</td><td>Accepted; my choice: blocked rooms greyed, not hidden</td></tr>
+  <tr><td>E12</td><td>Filter UI, empty state</td><td>Filters, empty state, disabled blocked card; 375 px fix</td><td>Accepted after browser check</td></tr>
+  <tr><td>E13</td><td>Refactor: one source of truth</td><td><code>durationOf</code>, <code>exceedsMaxDuration</code>, diagrams, grep counts</td><td>Accepted; re-counted duplication myself</td></tr>
+  <tr><td>E14</td><td>Consolidate tests + UI test</td><td>Merged suite, helper tests, 3 RTL tests, mutation check</td><td>Accepted; own run 40/40</td></tr>
+  <tr><td>E15</td><td>Report, reflection draft, README, translation</td><td>Drafts assembled from my decisions E9–E14</td><td>Reviewed and accepted; disclosed here</td></tr>
+</table>
+
+<h2>Problems found in AI output (and what I did)</h2>
+<table>
+  <tr><th style="width:30%">Problem</th><th>Action</th></tr>
+  <tr><td>E9 suggested removing the Check button and computing the result live</td><td>Rejected that part: kept the button, only clear the result on input change (smaller change, original UX).</td></tr>
+  <tr><td>E9 suggested treating <code>booking.py</code> as something to clean up</td><td>Kept it unchanged as legacy reference; listed as a remaining limitation.</td></tr>
+  <tr><td>E12: the agent could not open Chrome at first, so the UI was not verified when it reported "done"</td><td>It said so explicitly; I asked it to take the screenshots, and it then used Firefox automation. I reviewed the screenshots and checked the UI myself.</td></tr>
+  <tr><td>E12: one screenshot showed two highlighted room cards</td><td>The agent checked the DOM (<code>aria-pressed</code>, classes): only one card was selected; the image caught a 200 ms CSS transition. Screenshot retaken.</td></tr>
+  <tr><td>E12: mobile check found a real defect — page 1102 px wide at 375 px</td><td>Confirmed it also exists in the initial version (measured); fixed with <code>min-w-0</code>; before/after screenshots S8/T2_8.</td></tr>
+  <tr><td>E14 reduced the test count from 47 to 40</td><td>Checked the consolidation list case by case and ran the 34 original tests on the final code (34/34) to make sure nothing was lost.</td></tr>
+  <tr><td>Screenshot crop: first automatic crop cut the wrong region</td><td>Detected on review; re-cropped from the full original.</td></tr>
+</table>
+
+<h2 class="pb">E9 — Task 1: codebase analysis (no code)</h2>
+<h3>Prompt (verbatim)</h3>
+<pre>Task 1 (analysis only, NO code changes).
+Repo map: initial/bolt/project (React+TS+Vite, Bolt export, Practice 06/07):
+ src/data.ts (4 rooms), src/types.ts, src/lib/availability.ts (checkAvailability),
+ src/lib/time.ts, src/App.tsx, src/components/{RoomCard,ResultBanner,TimeInput,Timeline}.tsx,
+ src/lib/availability.test.ts + availability.ai.test.ts (34 tests, all pass).
+ initial/booking.py (Python can_book from A3, same rules).
+Acceptance: AC1 valid time (0&lt;=start&lt;end&lt;=1440, start&gt;now), AC2 &lt;=120 min,
+ AC3 blocked room rejected, AC4 no overlap (touching allowed), AC5 data not mutated,
+ AC6 clear feedback + responsive.
+New: catalog &gt;=4 rooms with id, name, capacity, equipment, blocked, bookings.
+ F1 capacity &gt;= attendees, F2 room has ALL selected equipment, F3 blocked never available,
+ F4 empty state, F5 switching room refreshes result using that room's bookings.
+Constraints: no login, DB, APIs, payments; fictional data; fixed now.
+Observed: changing time or room after Check keeps the old result (screenshot S4).
+Give: at least 3 maintainability risks with file/function references,
+ then a prioritized small-step improvement plan. Do not write code.</pre>
+<h3>Output used</h3>
+<p>R1 stale result (<code>App.tsx:18/30/78</code>), R2 rule duplicated (<code>availability.ts:28</code>, <code>App.tsx:28/117</code>, <code>ResultBanner.tsx:29</code>, <code>booking.py:22</code>), R3 model cannot express equipment/filters (<code>types.ts</code>, <code>App.tsx:72/77</code>), R4 duplicated tests, R5 small defects; nine-step plan. Full text: <code>evidence/E9_answer.md</code>.</p>
+<div class="decision"><b>My decision.</b> I confirmed R1–R4 myself: reproduced R1 (S4, S5), checked R2 and R4 against the code lines and R3 against <code>types.ts</code>. <b>Modified plan item 2:</b> keep the Check button and only clear the result when room or time changes (smaller change, original UX, one change at a time). <b>Item 6 partially:</b> <code>booking.py</code> stays as the initial version for comparison.</div>
+<div class="fig"><img src="../evidence/screens/E9_prompt.png"><div class="cap">E9 prompt as sent in Claude Code.</div></div>
+<div class="grid2">
+  <div class="fig"><img src="../evidence/screens/E9_answer_1_risks.png"><div class="cap">E9 answer — risks.</div></div>
+  <div class="fig"><img src="../evidence/screens/E9_answer_2_plan.png"><div class="cap">E9 answer — prioritized plan.</div></div>
+</div>
+
+<h2 class="pb">E10 — Fix R1 (stale result, F5)</h2>
+<h3>Prompt (verbatim)</h3>
+<pre>Step E10 (Task 2, plan item 2, modified by me):
+Fix R1 only. Keep the Check button. Clear the result whenever the selected room,
+start time or end time changes, so a result always belongs to the current inputs (F5, F3).
+Work in a copy: app/ (copied from initial/bolt/project), keep initial/ untouched.
+Add a test proving the check uses the selected room's bookings
+(same interval: available in one room, unavailable in another).
+Run the full test suite and show the result. No other changes.</pre>
+<h3>Output used</h3>
+<p><code>selectRoom</code>, <code>changeStart</code>, <code>changeEnd</code> in <code>App.tsx</code> each call <code>setResult(null)</code>; new <code>roomSelection.test.ts</code> (13:00–14:00 unavailable in lib-201, available in arts-05). 36/36 passed. Commit <code>a5c7cc5</code>.</p>
+<div class="decision"><b>My decision / verification.</b> Accepted. Ran <code>app/</code> in the browser: after switching to the blocked room the result is cleared (S6 vs S5). Tests in my terminal: 36/36.</div>
+<div class="grid2">
+  <div class="fig"><img src="../evidence/screens/E10_prompt_diff.png"><div class="cap">E10 prompt and diff.</div></div>
+  <div class="fig"><img src="../evidence/screens/E10_answer.png"><div class="cap">E10 answer.</div></div>
+  <div class="fig"><img src="../evidence/screens/S5_blocked_shows_available_before_fix.png"><div class="cap">S5 before fix.</div></div>
+  <div class="fig"><img src="../evidence/screens/S6_after_fix_room_switch.png"><div class="cap">S6 after fix (my own check).</div></div>
+</div>
+
+<h2 class="pb">E11 — Equipment and pure filter (F1–F4)</h2>
+<h3>Prompt (verbatim)</h3>
+<pre>Step E11 (Task 2, plan items 3–4):
+In app/ only. Add equipment: string[] to Room and fill data.ts with at least
+4 fictional rooms: varied capacity and equipment, one blocked, each with own bookings.
+Create a pure module src/lib/filtering.ts with filterRooms(rooms, attendees, equipment):
+ F1 capacity &gt;= attendees, F2 room has ALL selected equipment,
+ F3 blocked rooms stay in the list but are marked unavailable and cannot be selected.
+Do not mutate input. Add unit tests incl. exact capacity (8 for 8 attendees)
+vs insufficient (8 for 9), equipment subset, empty result (F4 data case).
+No UI changes yet. Run all tests and show the result.</pre>
+<h3>Output used</h3>
+<p><code>Room.equipment</code>, 5-room catalog, <code>filterRooms</code> → <code>{ room, selectable }[]</code>, <code>hasSelectableRoom</code>, 11 tests. Old fixtures received only <code>equipment: []</code> (required field). 47/47. Commit <code>42fab21</code>.</p>
+<div class="decision"><b>My decision / verification.</b> F3: blocked rooms are shown greyed out instead of hidden, so the user sees why they are unavailable (my choice between two options offered). Read <code>filtering.ts</code>: <code>&gt;=</code> for F1, <code>every</code> for F2. Checked in the diff that old test cases were not changed. Tests on my machine: 47/47.</div>
+<div class="grid2">
+  <div class="fig"><img src="../evidence/screens/E11_prompt_diff.png"><div class="cap">E11 prompt and diff.</div></div>
+  <div class="fig"><img src="../evidence/screens/E11_answer.png"><div class="cap">E11 answer.</div></div>
+</div>
+
+<h2 class="pb">E12 — Filter UI, empty state, blocked rooms</h2>
+<h3>Prompt (verbatim)</h3>
+<pre>Step E12 (Task 2, plan item 5):
+In app/ only. Add to the UI: attendees number input (default 1) and equipment
+checkboxes from EQUIPMENT_OPTIONS. Render only rooms returned by filterRooms.
+Blocked rooms appear greyed out with "Blocked" and cannot be selected (F3).
+Show equipment on each room card. If no selectable room matches, show a clear
+empty state with a hint to change filters (F4). If the selected room is filtered
+out or blocked, clear the selection and the result (F5).
+Keep layout usable at 375px. Run all tests and build, show the result.</pre>
+<p>Follow-up (my message): "can you make the screenshots yourself" — the agent drove Firefox, captured T2_1…T2_8 and, while measuring the 375 px layout, found the overflow defect.</p>
+<h3>Output used</h3>
+<p><code>RoomFilters</code>, <code>EmptyState</code>, updated <code>RoomCard</code>, <code>parseAttendees</code>, <code>applyFilters</code> in <code>App.tsx</code> (commit <code>6959292</code>); 375 px fix <code>min-w-0</code> (commit <code>86c6e3d</code>); screenshot notes <code>evidence/T2_screens_notes.md</code>.</p>
+<div class="decision"><b>My decision / verification.</b> Accepted the UI. Checked in the browser myself: filters, empty state, greyed blocked room, selection reset when filtering. Compared S8/T2_8 for the 375 px fix. The UI screenshots were taken by the AI through browser automation; I reviewed them.</div>
+<div class="fig"><img src="../evidence/screens/E12_answer.png"><div class="cap">E12 answer.</div></div>
+
+<h2 class="pb">E13 — Refactoring (one source of truth)</h2>
+<h3>Prompt (verbatim)</h3>
+<pre>Step E13 (Task 3, plan items 6 and 8): refactor app/ without changing behaviour.
+Goal: clear modules — room data (data.ts), booking/availability rules (lib/availability.ts),
+filtering (lib/filtering.ts), UI (components/, App.tsx).
+Remove duplicated logic:
+ - duration and the 120-min check are computed in App.tsx and ResultBanner as well as
+   in availability.ts — make one source of truth;
+ - availability.ts formats "now" via formatRange(...).split — use minutesToHHMM;
+ - Timeline legend says "Candidate (blocked)" for any unavailable result;
+ - remove unused @supabase/supabase-js.
+Mark initial/booking.py as legacy reference only (do not edit initial/).
+Keep all existing tests green; do not change their expectations.
+Show before/after module diagram, list duplicated locations removed (with how you counted),
+run tests, typecheck and build.</pre>
+<h3>Output used</h3>
+<p><code>durationOf</code> (time.ts), <code>exceedsMaxDuration</code> (availability.ts), <code>result.duration</code> in the banner; 3 duplicated locations removed, counted with <code>grep -rnF</code> before/after (<code>evidence/05</code>, <code>06</code>); <code>docs/architecture.md</code>. 47/47. Commit <code>074f99c</code>.</p>
+<div class="decision"><b>My decision / verification.</b> Accepted. Repeated the grep count myself (2 duration formulas and 2 120-minute checks before, one of each after); tests 47/47 without expectation changes; in the browser Available shows "(60 min)" and 121 minutes shows the red label. The Python copy is not deleted — out of runtime, listed as a limitation.</div>
+<div class="grid2">
+  <div class="fig"><img src="../evidence/screens/E13_prompt_diff.png"><div class="cap">E13 prompt and first diff.</div></div>
+  <div class="fig"><img src="../evidence/screens/E13_answer.png"><div class="cap">E13 answer.</div></div>
+</div>
+
+<h2 class="pb">E14 — Test consolidation and UI test</h2>
+<h3>Prompt (verbatim)</h3>
+<pre>Step E14 (Task 4, plan items 7 and 9):
+In app/ only. Consolidate tests: merge availability.ai.test.ts into availability.test.ts
+keeping every distinct case (AC1–AC5 regression: 120 vs 121 min, touching vs overlapping,
+start == now, mutation check); remove exact duplicates and report which ones.
+Add unit tests for durationOf and exceedsMaxDuration.
+Add at least one UI/integration test with React Testing Library (jsdom):
+filter by attendees/equipment -&gt; select room -&gt; Check -&gt; switch room -&gt; result clears -&gt;
+Check again uses the new room's bookings; and empty state for impossible filters.
+Show the exact commands and the pass/fail output; save it to evidence/.</pre>
+<h3>Output used</h3>
+<p>Merged suite (14 duplicates removed, T13b kept), helper tests, A3 boundary cases, <code>App.test.tsx</code> (3 tests), mutation check (2/2 detected), original 34 tests on final code (34/34). 40/40. Commit <code>d508845</code>.</p>
+<div class="decision"><b>My decision / verification.</b> Accepted. Compared the removed tests with the remaining ones using <code>E14_test_consolidation.md</code>; confirmed <code>evidence/09</code> and <code>evidence/10</code>; ran the suite myself: 40/40. The count went from 47 to 40 on purpose — duplicates do not test new behaviour.</div>
+<div class="grid2">
+  <div class="fig"><img src="../evidence/screens/E14_prompt.png"><div class="cap">E14 prompt.</div></div>
+  <div class="fig"><img src="../evidence/screens/E14_answer.png"><div class="cap">E14 answer.</div></div>
+</div>
+<div class="fig" style="width:70%"><img src="../evidence/screens/E14_check_tests.png"><div class="cap">My own run in my terminal: 40 passed (40).</div></div>
+
+<h2>E15 — Documentation, reflection draft and translation</h2>
+<p><b>Prompts (summary):</b> "write the reflection yourself" (from my bullet points on context, useful/incorrect advice, verification, tests, next steps); "everything must be in English — translate"; assemble README, report and this appendix from the evidence folder.</p>
+<p><b>Output used:</b> <code>README.md</code>, <code>docs/reflection.md</code> (289 words), the report PDF and this appendix.</p>
+<div class="decision"><b>My decision / verification.</b> The reflection was drafted by the AI from my own decisions recorded in E9–E14; I read it, checked that every statement matches what happened, and accepted it. All numbers in the report come from saved command outputs in <code>evidence/</code>; I checked the test counts against my own run.</div>
+
+</body>
+</html>

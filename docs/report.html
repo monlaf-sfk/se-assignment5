@@ -1,0 +1,268 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Assignment #04 Report — Kerimzhanov Rassul</title>
+<style>
+  @page { size: A4; margin: 16mm 15mm 18mm 15mm; }
+  :root { --ink:#1b2430; --muted:#5b6675; --line:#d5dbe3; --soft:#f3f6f9; --accent:#0b6aa8; }
+  * { box-sizing: border-box; }
+  body { font-family: -apple-system, "Helvetica Neue", Arial, sans-serif; color: var(--ink); font-size: 10.5pt; line-height: 1.45; margin: 0; }
+  h1 { font-size: 20pt; margin: 0 0 4pt; }
+  h2 { font-size: 14pt; margin: 18pt 0 6pt; padding-bottom: 3pt; border-bottom: 2px solid var(--accent); break-after: avoid; }
+  h3 { font-size: 11.5pt; margin: 12pt 0 4pt; break-after: avoid; }
+  p { margin: 4pt 0 6pt; }
+  .sub { color: var(--muted); font-size: 11pt; margin-bottom: 10pt; }
+  table { width: 100%; border-collapse: collapse; margin: 6pt 0 10pt; font-size: 9.5pt; break-inside: auto; }
+  th, td { border: 1px solid var(--line); padding: 4pt 6pt; vertical-align: top; text-align: left; }
+  th { background: var(--soft); font-weight: 600; }
+  tr { break-inside: avoid; }
+  code { font-family: Menlo, Consolas, monospace; font-size: 8.8pt; background: var(--soft); padding: 0 2pt; border-radius: 2pt; }
+  pre { font-family: Menlo, Consolas, monospace; font-size: 7.6pt; line-height: 1.3; background: var(--soft); border: 1px solid var(--line); padding: 6pt 8pt; white-space: pre; overflow: hidden; break-inside: avoid; margin: 6pt 0 10pt; }
+  .fig { margin: 6pt 0 12pt; break-inside: avoid; }
+  .fig img { width: 100%; border: 1px solid var(--line); display: block; }
+  .fig .cap { font-size: 8.8pt; color: var(--muted); margin-top: 3pt; }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8pt; }
+  .grid2 .fig img { max-height: 255pt; object-fit: cover; object-position: top; }
+  .mobile { display: grid; grid-template-columns: 1fr 1fr; gap: 16pt; }
+  .mobile .fig img { max-height: 330pt; object-fit: cover; object-position: top; }
+  .note { background: #fff8e6; border-left: 3px solid #e0a800; padding: 5pt 8pt; margin: 6pt 0 10pt; font-size: 9.5pt; }
+  .ok { color: #137a3d; font-weight: 600; }
+  .bad { color: #b42318; font-weight: 600; }
+  .pb { break-before: page; }
+  ul { margin: 3pt 0 6pt 16pt; padding: 0; }
+  li { margin: 1.5pt 0; }
+</style>
+</head>
+<body>
+
+<h1>Software Engineering — Assignment #04</h1>
+<div class="sub">Smart Campus Room Availability Checker: AI-assisted software evolution, refactoring and quality improvement</div>
+
+<table>
+  <tr><th style="width:28%">Field</th><th>Value</th></tr>
+  <tr><td>Student</td><td>Kerimzhanov Rassul (24B031844)</td></tr>
+  <tr><td>Date of AI work</td><td>4 November 2026</td></tr>
+  <tr><td>AI assistant</td><td>Claude Code (CLI agent), model Claude Opus 5.5, working inside the local repository</td></tr>
+  <tr><td>Stack</td><td>React 18 + TypeScript + Vite 5 + Tailwind; tests: Vitest 1.6.1, React Testing Library 16, jsdom 24</td></tr>
+  <tr><td>Environment</td><td>macOS, Node.js 26.10.0, npm 11.19.1</td></tr>
+  <tr><td>Initial version</td><td><code>initial/</code> — Git commit <code>905d50f</code> (A3 Python core + Bolt export from Practice 06/07)</td></tr>
+  <tr><td>Final version</td><td><code>app/</code> — Git commits <code>a5c7cc5</code> … <code>d508845</code> (feature, refactoring, tests); docs after that</td></tr>
+  <tr><td>Companion files</td><td><code>README.md</code> (setup/run/test), <code>AI_Evidence</code> PDF, <code>evidence/</code> (raw outputs and screenshots)</td></tr>
+</table>
+
+<h2>0. Starting point and baseline</h2>
+<p>The starting code is my previous Smart Campus prototype. The latest Bolt export (Practice 06/07) is newer than the version described in my A3 report: it already had four fictional rooms with their own bookings, a pure <code>checkAvailability</code> function and two Vitest files. It had <b>no equipment, no capacity filter and no attendees input</b>. The Python <code>booking.py</code> from A3 contains the same AC1–AC4 rules a second time.</p>
+<p><b>Baseline (before any change):</b> <code>cd initial/bolt/project &amp;&amp; npx vitest run</code> → <span class="ok">34 passed (34)</span>; typecheck and build pass (<code>evidence/01_baseline_vitest.txt</code>, screenshot S1).</p>
+
+<h2>1. Task 1 — Codebase analysis</h2>
+<h3>Context given to the AI</h3>
+<p>One prompt (E9) with: a repository map (every source file and its role), AC1–AC6, the new requirements F1–F5, the constraints (no login, payments, APIs or DB; fictional data; fixed now), the observed defect from screenshot S4, and an explicit instruction "analysis only, do not write code".</p>
+
+<h3>Maintainability risks (verified by me against the code)</h3>
+<table>
+  <tr><th style="width:4%">#</th><th style="width:22%">Risk</th><th>Evidence (file / function)</th><th style="width:11%">Priority</th></tr>
+  <tr><td>R1</td><td>Stale result: UI state not derived from inputs (breaks F5, F3, AC6)</td><td><code>App.tsx:18</code> keeps <code>result</code> in state; only <code>handleCheck</code> (<code>App.tsx:30</code>) sets it; <code>setRoomId</code>, <code>setStartTime</code>, <code>setEndTime</code> never clear it. Reproduced: S4 (11:00–12:11 overlaps 12:00–14:00 but shows "Available"), S5 (blocked room shows "Available").</td><td>High</td></tr>
+  <tr><td>R2</td><td>Same rule computed in several places</td><td>Duration/120-min rule in <code>availability.ts:28</code>, <code>App.tsx:28</code>, <code>App.tsx:117</code>, <code>ResultBanner.tsx:29</code>. Whole rule set duplicated in <code>initial/booking.py: can_book</code> with a different check order (blocked first, <code>booking.py:22</code>, vs after duration in <code>availability.ts:35</code>).</td><td>High</td></tr>
+  <tr><td>R3</td><td>Room model cannot express new requirements; filtering has no home</td><td><code>types.ts: Room</code> has no <code>equipment</code>; <code>App.tsx:72</code> renders <code>SAMPLE_ROOMS</code> directly; <code>RoomCard</code> gets <code>disabled={false}</code> hard-coded (<code>App.tsx:77</code>); <code>App.tsx</code> already mixes data, state, validation and layout.</td><td>High</td></tr>
+  <tr><td>R4</td><td>Duplicated tests</td><td><code>availability.ai.test.ts</code> repeats most cases of <code>availability.test.ts</code>; T01 appears twice in the same file (lines 31 and 92).</td><td>Medium</td></tr>
+  <tr><td>R5</td><td>Small defects</td><td><code>availability.ts:23</code> formats "now" via <code>formatRange(t,t).split(' – ')[0]</code>; <code>Timeline.tsx:110</code> legend says "Candidate (blocked)" for any unavailable result; unused <code>@supabase/supabase-js</code> contradicts the no-DB constraint.</td><td>Low</td></tr>
+</table>
+
+<h3>Prioritized plan (agreed before editing code)</h3>
+<ol style="margin-left:16pt">
+  <li>Keep the 34-test baseline as the regression net.</li>
+  <li>Fix R1 (stale result) and add a room-switch test.</li>
+  <li>Add <code>equipment</code> to <code>Room</code>; at least four rooms with varied capacity/equipment, one blocked.</li>
+  <li>Pure <code>filterRooms</code> module for F1–F3 with unit tests (capacity 8 vs 9).</li>
+  <li>UI: attendees + equipment inputs, filtered list, empty state (F4).</li>
+  <li>Refactor R2: one source for duration and the 120-minute rule.</li>
+  <li>Consolidate tests (R4).</li>
+  <li>Fix R5 items, remove the unused dependency.</li>
+  <li>One UI/integration test: filter → select → check → switch room.</li>
+</ol>
+
+<h3>AI suggestion I modified</h3>
+<p>For item 2 the AI proposed deriving the result live from the inputs and dropping the Check button. <b>I changed this</b>: the Check button stays and the result is simply cleared whenever the room, time or filters change. It is a smaller change, keeps the original UX, and follows "one change at a time". I also accepted item 6 only partially: <code>booking.py</code> is not deleted, it stays as a legacy reference outside the runtime.</p>
+
+<div class="grid2">
+  <div class="fig"><img src="../evidence/screens/S4_stale_result_time_change.png"><div class="cap">S4 — before: time changed after Check, stale "Available (71 min)" for an interval overlapping 12:00–14:00.</div></div>
+  <div class="fig"><img src="../evidence/screens/S5_blocked_shows_available_before_fix.png"><div class="cap">S5 — before: blocked Science 340 selected, still shows "Available" from Library 201.</div></div>
+</div>
+
+<h2 class="pb">2. Task 2 — Feature extension</h2>
+<p>Implemented in four small steps (E10–E12 plus one fix), each followed by a full test run and a commit:</p>
+<ul>
+  <li><b>Catalog</b> (<code>data.ts</code>): five fictional rooms, each with id, name, capacity, equipment list, blocked status and its own bookings. <code>sci-340</code> is blocked; capacities 4, 8, 12, 16, 30.</li>
+  <li><b>Filtering</b> (<code>lib/filtering.ts</code>): F1 <code>capacity &gt;= attendees</code>; F2 room has <b>all</b> selected items (<code>every</code>); F3 a blocked room that matches stays visible but is <code>selectable: false</code>; F4 empty state when no selectable room matches.</li>
+  <li><b>UI</b>: attendees field (whole number ≥ 1, otherwise a red hint), equipment chips, "N of 5 rooms match", equipment on every card, greyed-out blocked card with its reason, empty state with a hint.</li>
+  <li><b>F5</b>: changing room, time or filters clears the previous result; a filter that hides the selected room clears the selection. The check always uses the selected room's own bookings.</li>
+  <li><b>Preserved</b>: time validation (AC1), 120-minute maximum (AC2), blocked rule (AC3), overlap with touching allowed (AC4), no mutation (AC5) — the 34 original tests still pass on the final code.</li>
+  <li><b>AC6 defect found and fixed</b>: at 375 px the page was 1102 px wide (cards and the Check button cut off). The 1056 px timeline stretched the grid column because grid items default to <code>min-width: auto</code>. Fix: <code>min-w-0</code> on both sections. The defect existed in the initial version too (measured).</li>
+</ul>
+
+<div class="grid2">
+  <div class="fig"><img src="../evidence/screens/T2_1_filter_success_10_projector.png"><div class="cap">T2_1 — successful filtering: 10 attendees + projector → 3 of 5 rooms; Library 201 hidden; Science 340 greyed (Blocked).</div></div>
+  <div class="fig"><img src="../evidence/screens/T2_2_filter_empty_50.png"><div class="cap">T2_2 — unsuccessful filtering: 50 attendees → empty state (F4).</div></div>
+  <div class="fig"><img src="../evidence/screens/T2_3_lib201_1300_unavailable_overlap.png"><div class="cap">T2_3 — Library 201, 13:00–14:00 → Unavailable, overlaps Faculty Meeting (AC4).</div></div>
+  <div class="fig"><img src="../evidence/screens/T2_4_switch_to_arts05_result_cleared.png"><div class="cap">T2_4 — room switched to Arts 05 → previous result cleared (F5).</div></div>
+  <div class="fig"><img src="../evidence/screens/T2_5_arts05_1300_available.png"><div class="cap">T2_5 — same interval in Arts 05 → Available (60 min): its own bookings are used.</div></div>
+  <div class="fig"><img src="../evidence/screens/T2_6_121min_unavailable.png"><div class="cap">T2_6 — 11:00–13:01 → Unavailable, 121 minutes (AC2).</div></div>
+</div>
+<div class="grid2">
+  <div class="fig"><img src="../evidence/screens/T2_7_filter_hides_selected_room.png"><div class="cap">T2_7 — ticking "whiteboard" hides the selected Arts 05; selection and result cleared.</div></div>
+  <div class="fig"><img src="../evidence/screens/S6_after_fix_room_switch.png"><div class="cap">S6 — after the R1 fix: switching to the blocked room no longer shows the old verdict (compare S5).</div></div>
+</div>
+<div class="mobile">
+  <div class="fig"><img src="../evidence/screens/S8_mobile_375_before_overflow.png"><div class="cap">S8 — initial version at 375 px: content cut off (scrollWidth 1102 px).</div></div>
+  <div class="fig"><img src="../evidence/screens/T2_8_mobile_375_after_fix.png"><div class="cap">T2_8 — final version at 375 px: no horizontal scroll (scrollWidth 375 px).</div></div>
+</div>
+
+<h2 class="pb">3. Task 3 — Refactoring</h2>
+<h3>Module diagram — before</h3>
+<pre>
+  +--------------------------------------------------------------+
+  | App.tsx  (data + state + validation + layout)                |
+  |  - renders SAMPLE_ROOMS directly, no filtering               |
+  |  - own duration math (endMin - startMin)                     |
+  |  - own 120-min check (duration &gt; MAX_BOOKING_MINUTES)        |
+  |  - result kept in state, never cleared (stale)               |
+  +------+---------------+----------------+-------------+--------+
+         |               |                |                      |
+         v               v                v             v
+     data.ts       lib/availability.ts  lib/time.ts   components/
+     4 rooms,      AC1-AC4 + own         HH:MM utils   RoomCard (disabled=false)
+     no equipment  duration + 120 check,               ResultBanner (own duration prop)
+                   split() hack for now                Timeline ("Candidate (blocked)")
+
+  initial/booking.py  can_book(...)  -&gt; 2nd copy of AC1-AC4, different check order
+  package.json: @supabase/supabase-js (unused)   tests: 2 files, mostly duplicate cases
+</pre>
+<h3>Module diagram — after</h3>
+<pre>
+  +----------------------- UI presentation (App.tsx, components/) ----------------------+
+  | App.tsx: wires state to pure functions; clears result on room/time/filter change    |
+  | RoomFilters  EmptyState  RoomCard(selectable)  ResultBanner(result.duration)        |
+  | TimeInput    Timeline("Candidate (unavailable)")                                    |
+  +------------+------------------------------+------------------------------+----------+
+               |                              |                                         |
+               v                              v                              v
+  +------------------------+   +------------------------------+   +---------------------+
+  | Filtering              |   | Booking / availability rules |   | Room data           |
+  | lib/filtering.ts       |   | lib/availability.ts          |   | data.ts, types.ts   |
+  | filterRooms (F1-F3)    |   | checkAvailability (AC1-AC4)  |   | 5 rooms, equipment  |
+  | hasSelectableRoom (F4) |   | exceedsMaxDuration (AC2)     |   | EQUIPMENT_OPTIONS   |
+  | parseAttendees         |   |                              |   |                     |
+  +-----------+------------+   +--------------+---------------+   +---------------------+
+              +-------------------+-----------+
+                                  v
+                      +------------------------+
+                      | lib/time.ts            |
+                      | durationOf (only       |
+                      | duration formula)      |
+                      +------------------------+
+  initial/booking.py: legacy reference only, not used by the app
+</pre>
+<p>Dependency direction: UI → filtering / rules → time utilities; data is read-only input. Nothing below the UI imports React, so all of it is pure and unit-tested.</p>
+
+<h3>Duplication removed</h3>
+<table>
+  <tr><th>Before</th><th>After</th></tr>
+  <tr><td><code>App.tsx:60</code> own formula <code>endMin - startMin</code></td><td><code>durationOf()</code> in <code>time.ts</code> (also used inside <code>checkAvailability</code>)</td></tr>
+  <tr><td><code>App.tsx:188</code> own <code>duration &gt; MAX_BOOKING_MINUTES</code></td><td><code>exceedsMaxDuration()</code> in <code>availability.ts</code></td></tr>
+  <tr><td><code>ResultBanner.tsx:29</code> duration from a separately computed prop</td><td><code>result.duration</code> — the duration the decision was made for</td></tr>
+</table>
+<p>Also: <code>split()</code> hack → <code>minutesToHHMM</code>; legend → "Candidate (unavailable)"; <code>@supabase/supabase-js</code> removed. Behaviour unchanged: 47/47 tests before and after the refactoring with no test expectation edited.</p>
+
+<h3>Design decisions</h3>
+<ol style="margin-left:16pt">
+  <li><b>One source of truth for the duration rule.</b> <code>durationOf</code> is the only duration formula and <code>exceedsMaxDuration</code> the only 120-minute decision; the UI label and the rule engine both call them, and the banner shows <code>result.duration</code>. A rule change is now a one-line edit, and the banner can no longer disagree with the verdict.</li>
+  <li><b>Filtering returns <code>{ room, selectable }</code> instead of hiding blocked rooms.</b> F3 is explicit and visible (the user sees why a room cannot be booked), F4 is defined as "no selectable room", and F1–F4 are testable without rendering React.</li>
+  <li><b>The checked room is derived, not stored.</b> <code>App.tsx</code> computes the room from the current filter result and selected id, and every input change clears the stored result, so a result always belongs to the current inputs (fixes R1/F5).</li>
+  <li><b>Python <code>booking.py</code> kept as legacy reference only</b>: the web app has a single TypeScript rule set; the Python copy is out of the runtime path and listed as a limitation.</li>
+</ol>
+
+<h2 class="pb">4. Task 4 — Automated testing</h2>
+<h3>Commands and results (actual runs)</h3>
+<table>
+  <tr><th style="width:44%">Command</th><th>Result</th><th>Evidence</th></tr>
+  <tr><td><code>cd initial/bolt/project &amp;&amp; npx vitest run</code></td><td><span class="ok">34 passed (34)</span> — baseline</td><td><code>01_baseline_vitest.txt</code>, S1</td></tr>
+  <tr><td><code>cd app &amp;&amp; npx vitest run --reporter=verbose</code></td><td><span class="ok">40 passed (40)</span>, 4 files</td><td><code>08_E14_final_tests.txt</code>, <code>E14_check_tests.png</code> (my own run)</td></tr>
+  <tr><td>original 34 tests copied from <code>initial/</code>, run on final code</td><td><span class="ok">34 passed (34)</span></td><td><code>10_E14_original_tests_on_final.txt</code></td></tr>
+  <tr><td>mutation M1: F1 <code>&gt;=</code> → <code>&gt;</code></td><td><span class="bad">2 failed</span> | 38 passed — detected</td><td><code>09_E14_mutation_check.txt</code></td></tr>
+  <tr><td>mutation M2: room switch no longer clears result</td><td><span class="bad">1 failed</span> (UI test) | 39 passed — detected</td><td><code>09_E14_mutation_check.txt</code></td></tr>
+  <tr><td><code>npm run typecheck</code>, <code>npm run lint</code>, <code>npm run build</code></td><td>no errors; build OK</td><td><code>08_E14_final_tests.txt</code></td></tr>
+</table>
+
+<h3>Test files</h3>
+<table>
+  <tr><th style="width:30%">File</th><th style="width:8%">Tests</th><th>Content</th></tr>
+  <tr><td><code>src/lib/availability.test.ts</code></td><td>24</td><td>AC1–AC5 regression + <code>durationOf</code>, <code>exceedsMaxDuration</code></td></tr>
+  <tr><td><code>src/lib/filtering.test.ts</code></td><td>11</td><td>F1–F4, immutability, catalog shape</td></tr>
+  <tr><td><code>src/lib/roomSelection.test.ts</code></td><td>2</td><td>F5: same interval, different rooms, different results</td></tr>
+  <tr><td><code>src/App.test.tsx</code></td><td>3</td><td>UI/integration (React Testing Library, jsdom)</td></tr>
+</table>
+
+<h3>Coverage of required cases</h3>
+<table>
+  <tr><th style="width:22%">Requirement</th><th>Tests</th></tr>
+  <tr><td>AC1 valid time</td><td>T02 start = now → rejected; C2 now+1 → OK; T03 zero length; T04 reversed; T05 end 1441; A3-1 end = 1440 → OK; A3-2 negative start</td></tr>
+  <tr><td>AC2 120 vs 121 min</td><td>T06 720–840 (120) → OK; T07 720–841 (121) → rejected; <code>exceedsMaxDuration(120/121)</code></td></tr>
+  <tr><td>AC3 blocked</td><td>T13, T13b (with reason text)</td></tr>
+  <tr><td>AC4 touching vs overlapping</td><td>T01, T08 touching → OK; T09–T12 partial/contains/inside/identical → rejected; C1 between two bookings; C3 second booking only</td></tr>
+  <tr><td>AC5 no mutation</td><td>repeated checks leave room deep-equal; frozen bookings do not throw</td></tr>
+  <tr><td>F1 exact vs insufficient capacity</td><td>capacity 8 / 8 attendees → included; 8 / 9 → excluded</td></tr>
+  <tr><td>F2 all equipment</td><td>superset matches; partial match excluded; empty selection matches all</td></tr>
+  <tr><td>F3 blocked never available</td><td><code>selectable: false</code>; only-blocked match → no selectable room; UI: blocked card disabled</td></tr>
+  <tr><td>F4 empty state</td><td>no capacity → <code>[]</code>; impossible equipment combination → <code>[]</code>; UI: "No rooms match your requirements"</td></tr>
+  <tr><td>F5 room switch</td><td>lib-201 vs arts-05 for 13:00–14:00; UI: result clears on switch, Check uses new room; filter hiding selected room clears it</td></tr>
+</table>
+<p><b>UI/integration test</b> (<code>App.test.tsx</code>): renders the real <code>App</code> with the real catalog, sets 10 attendees + projector ("3 of 5", Library hidden, Science disabled), selects Engineering 110, 13:00–14:00 → Unavailable (Robotics Workshop), switches to Arts 05 → result cleared, Check → Available (60 min).</p>
+<p><b>Consolidation:</b> <code>availability.ai.test.ts</code> (15 tests) was merged: 14 exact duplicates removed, 1 distinct case kept as T13b (list in <code>evidence/E14_test_consolidation.md</code>). This is why the total is 40, not 47.</p>
+
+<h2>5. Task 5 — Quality evaluation</h2>
+<table>
+  <tr><th style="width:22%">Measure</th><th style="width:19%">Original</th><th style="width:19%">Final</th><th>How it was obtained</th></tr>
+  <tr><td>Automated tests passed / total</td><td>34 / 34</td><td>40 / 40</td><td><code>npx vitest run</code> in each version (<code>evidence/01</code>, <code>08</code>); also original 34 / 34 on final code (<code>evidence/10</code>)</td></tr>
+  <tr><td>Tests for F1–F5 / UI tests</td><td>0 / 0</td><td>16 / 3</td><td>Count of tests in <code>filtering</code> (11), <code>roomSelection</code> (2) and <code>App.test.tsx</code> (3) from the verbose run</td></tr>
+  <tr><td>Regressions detected by mutation</td><td>not measured</td><td>2 of 2</td><td>Two deliberate code mutations, full run after each (<code>evidence/09</code>)</td></tr>
+  <tr><td>Duplicated logic locations in app code</td><td>duration formula ×2, 120-min check ×2, independent duration display ×1</td><td>×1, ×1, ×0 — <b>3 locations removed</b></td><td><code>grep -rnF</code> over <code>app/src</code> excluding tests, before/after (<code>evidence/05</code>, <code>06</code>)</td></tr>
+  <tr><td>Duplicate test cases</td><td>14</td><td>0</td><td>Case-by-case comparison of inputs and fixtures (<code>E14_test_consolidation.md</code>)</td></tr>
+  <tr><td>Rule implementations across languages</td><td>2 (TS + Python)</td><td>2 (Python out of runtime)</td><td>File inspection; <code>booking.py</code> not imported by the app — remaining limitation</td></tr>
+  <tr><td>Unused dependencies</td><td>1 (<code>@supabase/supabase-js</code>)</td><td>0</td><td><code>grep supabase package.json</code> and source</td></tr>
+  <tr><td>Page width at 375 px viewport (AC6)</td><td>1102 px (overflow)</td><td>375 px</td><td><code>document.documentElement.scrollWidth</code> vs <code>innerWidth</code> in Firefox (S8, T2_8)</td></tr>
+  <tr><td>Stale result after room/time change</td><td>present (S4, S5)</td><td>fixed (S6, UI test)</td><td>Manual reproduction + <code>App.test.tsx</code></td></tr>
+  <tr><td>Source modules (non-test)</td><td>9 files, 840 lines</td><td>12 files, 1093 lines</td><td><code>wc -l</code> over <code>src</code> (lines grew because of new features)</td></tr>
+</table>
+<h3>Structure and responsibilities</h3>
+<table>
+  <tr><th style="width:26%">Module</th><th>Responsibility (final)</th></tr>
+  <tr><td><code>data.ts</code>, <code>types.ts</code></td><td>Fictional catalog (5 rooms, equipment options) and types</td></tr>
+  <tr><td><code>lib/availability.ts</code></td><td>Booking rules AC1–AC4, the only 120-minute decision; returns verdict, reason, conflict, duration</td></tr>
+  <tr><td><code>lib/filtering.ts</code></td><td>F1–F4: capacity, equipment, selectable flag, attendee parsing</td></tr>
+  <tr><td><code>lib/time.ts</code></td><td>Time conversion, the only duration formula</td></tr>
+  <tr><td><code>App.tsx</code></td><td>State and wiring; clears results on input changes</td></tr>
+  <tr><td><code>components/*</code></td><td>Presentation only: filters, empty state, room card, result banner, time input, timeline</td></tr>
+</table>
+<h3>Remaining limitations</h3>
+<ul>
+  <li><code>App.tsx</code> still holds all UI state and grew from 149 to 220 lines; a custom hook would separate state from layout.</li>
+  <li>The Python <code>booking.py</code> still contains a second copy of the rules (out of runtime, kept for comparison).</li>
+  <li>The timeline scrolls horizontally inside its card and truncates short labels ("09:0…"); later bookings are not visible without scrolling.</li>
+  <li>The UI test runs in jsdom, not a real browser; the 375 px check was done once with browser automation, not as an automated test.</li>
+  <li>The "only blocked rooms match" empty-state message cannot occur with the current data; it is covered only by a unit test.</li>
+  <li>Data is fictional, "now" is fixed at 10:30, time precision is one minute.</li>
+</ul>
+
+<h2 class="pb">6. Task 6 — AI reflection</h2>
+<p>I worked with Claude Code (Opus 5.5) in the repository. In the first prompt I gave it a file map, the criteria AC1–AC6 and F1–F5, the constraints (no login, database or APIs) and screenshot S4 showing a stale result. I asked for analysis and a plan only, then sent every change as a separate prompt.</p>
+<p>The analysis was the most useful part: the AI found five risks with line references, including the stale result after switching rooms and the duration computed in three places. While checking the page at 375 px it noticed horizontal scrolling that already existed in the initial version and that I never verified in A3. I did not accept everything. The AI suggested computing the result live without the Check button; I kept the button and only clear the result, because that is a smaller change. Once a screenshot showed two highlighted room cards. It was a CSS transition, and the AI confirmed this from the DOM, otherwise it would have looked like a bug.</p>
+<p>I personally checked the filters, the empty state and the selection reset in the browser, ran the tests in my terminal, confirmed from the diff that old test expectations did not change, and read <code>&gt;=</code> for capacity and <code>every</code> for equipment.</p>
+<p>Tests drove my decisions. I ran the 34 original tests on the final code as a safety net for refactoring. A mutation check showed that the tests catch replacing <code>&gt;=</code> with <code>&gt;</code> and removing the result reset. I removed duplicate tests: 40 instead of 47, with no distinct case lost.</p>
+<p>Next I would move the state out of App.tsx into a custom hook, add an end-to-end test in a real browser and remove the Python copy of the rules.</p>
+<p class="sub" style="font-size:9pt">(289 words, counted with <code>wc -w</code>.)</p>
+
+<div class="note"><b>AI-use disclosure.</b> Code changes, the analysis, browser-automation screenshots (T2_*, S8) and the first draft of this report and reflection were produced by Claude Code from my prompts and decisions; I reviewed, edited and verified them as recorded in the AI Evidence appendix.</div>
+
+</body>
+</html>
