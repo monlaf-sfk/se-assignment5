@@ -27,6 +27,21 @@ function App() {
 
   const duration = startMin !== null && endMin !== null && endMin > startMin ? endMin - startMin : null;
 
+  // R1 fix: a result always belongs to the current inputs.
+  // Any change of room or time clears it until the user presses Check again (F5, F3).
+  const selectRoom = (id: string) => {
+    setRoomId(id);
+    setResult(null);
+  };
+  const changeStart = (value: string) => {
+    setStartTime(value);
+    setResult(null);
+  };
+  const changeEnd = (value: string) => {
+    setEndTime(value);
+    setResult(null);
+  };
+
   const handleCheck = () => {
     if (!room || startMin === null || endMin === null) {
       setResult({ available: false, reason: 'Please select a room and valid times.' });
@@ -75,7 +90,7 @@ function App() {
                   room={r}
                   selected={r.id === roomId}
                   disabled={false}
-                  onSelect={setRoomId}
+                  onSelect={selectRoom}
                 />
               ))}
             </div>
@@ -89,8 +104,8 @@ function App() {
 
             <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
               <div className="flex flex-col gap-4 sm:flex-row sm:items-end">
-                <TimeInput label="Start time" value={startTime} onChange={setStartTime} error={startError} />
-                <TimeInput label="End time" value={endTime} onChange={setEndTime} error={endError} />
+                <TimeInput label="Start time" value={startTime} onChange={changeStart} error={startError} />
+                <TimeInput label="End time" value={endTime} onChange={changeEnd} error={endError} />
                 <div className="flex gap-2 sm:flex-none">
                   <button
                     type="button"
