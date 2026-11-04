@@ -1,0 +1,6 @@
+# Original 34 tests (copied unchanged from initial/, only import paths adjusted) run against FINAL app code
+$ npx vitest run src/lib/baseline_tmp
+ ✓ src/lib/baseline_tmp/orig.availability.ai.test.ts  (15 tests) 3ms
+ ✓ src/lib/baseline_tmp/orig.availability.test.ts  (19 tests) 2ms
+ Test Files  2 passed (2)
+      Tests  34 passed (34)

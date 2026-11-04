@@ -1,7 +1,10 @@
-// src/lib/availability.test.ts — Practice #07
+// src/lib/availability.test.ts — AC1–AC5 regression suite.
+// Practice #07 suite + the only distinct case from the former availability.ai.test.ts (T13b),
+// + A3 Python boundary cases (end == 1440, negative start) + single-source duration helpers (E13).
 // Run: npx vitest run
 import { describe, test, expect } from 'vitest';
-import { checkAvailability } from './availability';
+import { checkAvailability, exceedsMaxDuration } from './availability';
+import { durationOf } from './time';
 import type { Booking, Room } from '../types';
 
 // ---------- Fixture (fresh data for every test) ----------
@@ -30,7 +33,7 @@ describe('AC1 — time range', () => {
   test('T02: 540–570 starts exactly now → Unavailable', () => {
     const r = check(540, 570);
     expect(r.available).toBe(false);
-    expect(r.reason).toMatch(/after the current time/);
+    expect(r.reason).toMatch(/after the current time \(09:00\)/);
   });
 
   test('T03: 720–720 zero duration → Unavailable', () => {
@@ -51,6 +54,16 @@ describe('AC1 — time range', () => {
     expect(r.reason).toMatch(/same day/);
   });
 
+  test('A3-1: 1380–1440 ends exactly at midnight → Available', () => {
+    expect(check(1380, 1440, makeRoom({ bookings: [] })).available).toBe(true);
+  });
+
+  test('A3-2: -10–30 negative start → Unavailable', () => {
+    const r = check(-10, 30);
+    expect(r.available).toBe(false);
+    expect(r.reason).toMatch(/same day/);
+  });
+
   test('C2 (own): 541–600 starts one minute after now → Available', () => {
     // Boundary next to T02: detects a ">=" vs ">" mistake in the now-check
     expect(check(541, 600).available).toBe(true);
@@ -59,14 +72,29 @@ describe('AC1 — time range', () => {
 
 // ---------- AC2: max 120 minutes ----------
 describe('AC2 — duration', () => {
-  test('T06: 720–840 exactly 120 min → Available', () => {
-    expect(check(720, 840).available).toBe(true);
+  test('T06: 720–840 exactly 120 min → Available, result carries the duration', () => {
+    const r = check(720, 840);
+    expect(r.available).toBe(true);
+    expect(r.duration).toBe(120);
   });
 
   test('T07: 720–841 121 min → Unavailable', () => {
     const r = check(720, 841);
     expect(r.available).toBe(false);
     expect(r.reason).toMatch(/cannot exceed 120 minutes/);
+  });
+
+  test('exceedsMaxDuration: 120 is allowed, 121 is not (single 120-min decision)', () => {
+    expect(exceedsMaxDuration(120)).toBe(false);
+    expect(exceedsMaxDuration(121)).toBe(true);
+  });
+
+  test('durationOf: positive length, null for empty, reversed or missing ends', () => {
+    expect(durationOf(600, 720)).toBe(120);
+    expect(durationOf(720, 720)).toBeNull();
+    expect(durationOf(750, 720)).toBeNull();
+    expect(durationOf(null, 720)).toBeNull();
+    expect(durationOf(600, null)).toBeNull();
   });
 });
 
@@ -78,12 +106,20 @@ describe('AC3 — blocked room', () => {
     expect(r.available).toBe(false);
     expect(r.reason).toMatch(/blocked/);
   });
+
+  test('T13b (from ai suite): blocked with a reason → reason is shown', () => {
+    const r = check(660, 720, makeRoom({ blocked: true, blockReason: 'Maintenance' }));
+    expect(r.available).toBe(false);
+    expect(r.reason).toBe('This room is blocked: Maintenance.');
+  });
 });
 
 // ---------- AC4: overlap, touching allowed ----------
 describe('AC4 — overlap', () => {
-  test('T01: 660–720 touching after → Available', () => {
-    expect(check(660, 720).available).toBe(true);
+  test('T01: 660–720 touching after → Available, no conflict', () => {
+    const r = check(660, 720);
+    expect(r.available).toBe(true);
+    expect(r.conflict).toBeUndefined();
   });
 
   test('T08: 570–600 touching before → Available', () => {

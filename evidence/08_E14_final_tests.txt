@@ -1,0 +1,60 @@
+$ cd app && npx vitest run --reporter=verbose
+
+ RUN  v1.6.1 /Users/rasulkerimzhanov/Desktop/university/software_e/assignment4/app
+
+ ✓ src/lib/roomSelection.test.ts > F5 — check uses the selected room bookings > F5: same interval is unavailable in lib-201 (own booking 780–840)
+ ✓ src/lib/roomSelection.test.ts > F5 — check uses the selected room bookings > F5: switching to arts-05 gives a different result for the same interval
+ ✓ src/lib/filtering.test.ts > F1 — capacity >= attendees > F1: exact capacity is enough (capacity 8, 8 attendees)
+ ✓ src/lib/filtering.test.ts > F1 — capacity >= attendees > F1: insufficient capacity is excluded (capacity 8, 9 attendees)
+ ✓ src/lib/filtering.test.ts > F2 — room has ALL selected equipment > F2: room with a superset of the selection matches
+ ✓ src/lib/filtering.test.ts > F2 — room has ALL selected equipment > F2: room with only part of the selection is excluded
+ ✓ src/lib/filtering.test.ts > F2 — room has ALL selected equipment > F2: empty selection matches every room that passes F1
+ ✓ src/lib/filtering.test.ts > F3 — blocked room is listed but never selectable > F3: blocked room has selectable = false, others true
+ ✓ src/lib/filtering.test.ts > F3 — blocked room is listed but never selectable > F3: only a blocked room matches → no selectable room
+ ✓ src/lib/filtering.test.ts > F4 — empty result (data case) > F4: no room has enough capacity → empty array
+ ✓ src/lib/filtering.test.ts > F4 — empty result (data case) > F4: no room has the equipment combination → empty array
+ ✓ src/lib/filtering.test.ts > Immutability and catalog > filterRooms does not mutate rooms or the equipment selection
+ ✓ src/lib/filtering.test.ts > Immutability and catalog > catalog: at least 4 rooms, unique ids, one blocked, each with equipment and own bookings
+ ✓ src/lib/availability.test.ts > AC1 — time range > T02: 540–570 starts exactly now → Unavailable
+ ✓ src/lib/availability.test.ts > AC1 — time range > T03: 720–720 zero duration → Unavailable
+ ✓ src/lib/availability.test.ts > AC1 — time range > T04: 750–720 reversed → Unavailable
+ ✓ src/lib/availability.test.ts > AC1 — time range > T05: 1380–1441 past day end → Unavailable
+ ✓ src/lib/availability.test.ts > AC1 — time range > A3-1: 1380–1440 ends exactly at midnight → Available
+ ✓ src/lib/availability.test.ts > AC1 — time range > A3-2: -10–30 negative start → Unavailable
+ ✓ src/lib/availability.test.ts > AC1 — time range > C2 (own): 541–600 starts one minute after now → Available
+ ✓ src/lib/availability.test.ts > AC2 — duration > T06: 720–840 exactly 120 min → Available, result carries the duration
+ ✓ src/lib/availability.test.ts > AC2 — duration > T07: 720–841 121 min → Unavailable
+ ✓ src/lib/availability.test.ts > AC2 — duration > exceedsMaxDuration: 120 is allowed, 121 is not (single 120-min decision)
+ ✓ src/lib/availability.test.ts > AC2 — duration > durationOf: positive length, null for empty, reversed or missing ends
+ ✓ src/lib/availability.test.ts > AC3 — blocked room > T13: 660–720, blocked = true → Unavailable
+ ✓ src/lib/availability.test.ts > AC3 — blocked room > T13b (from ai suite): blocked with a reason → reason is shown
+ ✓ src/lib/availability.test.ts > AC4 — overlap > T01: 660–720 touching after → Available, no conflict
+ ✓ src/lib/availability.test.ts > AC4 — overlap > T08: 570–600 touching before → Available
+ ✓ src/lib/availability.test.ts > AC4 — overlap > T09: 630–690 partial overlap → Unavailable
+ ✓ src/lib/availability.test.ts > AC4 — overlap > T10: 570–690 contains booking → Unavailable
+ ✓ src/lib/availability.test.ts > AC4 — overlap > T11: 615–645 inside booking → Unavailable
+ ✓ src/lib/availability.test.ts > AC4 — overlap > T12: 600–660 identical interval → Unavailable
+ ✓ src/lib/availability.test.ts > AC4 — overlap > T14: 630–690, bookings = [] → Available
+ ✓ src/lib/availability.test.ts > AC4 — overlap > C1 (own): 660–720 between two bookings, touching both → Available
+ ✓ src/lib/availability.test.ts > AC4 — overlap > C3 (own): overlap with the second booking only → Unavailable
+ ✓ src/lib/availability.test.ts > AC5 — data preservation > AC5: repeated checks leave the room and its bookings unchanged
+ ✓ src/lib/availability.test.ts > AC5 — data preservation > AC5: frozen bookings do not cause errors (no mutation attempted)
+ ✓ src/App.test.tsx > App — filter → select → check → switch room > F1/F2/F3/F5 + AC4: result follows the selected room
+ ✓ src/App.test.tsx > App — filter → select → check → switch room > F4: impossible filter shows the empty state
+ ✓ src/App.test.tsx > App — filter → select → check → switch room > F5: filter that hides the selected room clears selection and result
+
+ Test Files  4 passed (4)
+      Tests  40 passed (40)
+   Start at  19:15:59
+   Duration  761ms (transform 78ms, setup 0ms, collect 218ms, tests 261ms, environment 226ms, prepare 155ms)
+
+
+$ npm run typecheck
+
+(no errors)
+
+$ npm run build
+dist/index.html                   0.71 kB │ gzip:  0.39 kB
+dist/assets/index-BJmfksjr.css   17.58 kB │ gzip:  4.04 kB
+dist/assets/index-CM79Y_JZ.js   163.93 kB │ gzip: 51.92 kB
+✓ built in 679ms
