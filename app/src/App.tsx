@@ -113,7 +113,7 @@ function App() {
 
         <div className="grid gap-4 sm:gap-6 lg:grid-cols-5">
           {/* Left: Room selection */}
-          <section className="lg:col-span-2">
+          <section className="min-w-0 lg:col-span-2">
             <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-500">
               1. Select a room
             </h2>
@@ -153,7 +153,7 @@ function App() {
           </section>
 
           {/* Right: Time + result */}
-          <section className="lg:col-span-3">
+          <section className="min-w-0 lg:col-span-3">
             <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-500">
               2. Enter a time range
             </h2>
