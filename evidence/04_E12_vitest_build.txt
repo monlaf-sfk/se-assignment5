@@ -1,0 +1,21 @@
+$ npx vitest run
+
+ RUN  v1.6.1 /Users/rasulkerimzhanov/Desktop/university/software_e/assignment4/app
+
+ ✓ src/lib/roomSelection.test.ts  (2 tests) 2ms
+ ✓ src/lib/availability.ai.test.ts  (15 tests) 2ms
+ ✓ src/lib/availability.test.ts  (19 tests) 2ms
+ ✓ src/lib/filtering.test.ts  (11 tests) 3ms
+
+ Test Files  4 passed (4)
+      Tests  47 passed (47)
+   Start at  19:00:52
+   Duration  264ms (transform 69ms, setup 0ms, collect 105ms, tests 9ms, environment 0ms, prepare 159ms)
+
+
+$ npm run build
+computing gzip size...
+dist/index.html                   0.71 kB │ gzip:  0.39 kB
+dist/assets/index--OvOhyrA.css   17.56 kB │ gzip:  4.04 kB
+dist/assets/index-BYcxvfBA.js   163.85 kB │ gzip: 51.92 kB
+✓ built in 714ms

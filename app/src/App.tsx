@@ -1,8 +1,11 @@
 import { useMemo, useState } from 'react';
 import { Building2, Clock3, RotateCcw } from 'lucide-react';
-import { SAMPLE_ROOMS } from '@/data';
+import { EQUIPMENT_OPTIONS, SAMPLE_ROOMS } from '@/data';
 import type { AvailabilityResult } from '@/types';
 import { checkAvailability } from '@/lib/availability';
+import { filterRooms, hasSelectableRoom, parseAttendees } from '@/lib/filtering';
+import { RoomFilters } from '@/components/RoomFilters';
+import { EmptyState } from '@/components/EmptyState';
 import { hhmmToMinutes, MAX_BOOKING_MINUTES, minutesToHHMM } from '@/lib/time';
 import { RoomCard } from '@/components/RoomCard';
 import { Timeline } from '@/components/Timeline';
@@ -12,12 +15,41 @@ import { ResultBanner } from '@/components/ResultBanner';
 function App() {
   // Current time as minutes from midnight (fictional "now" = 10:30)
   const [currentTime] = useState(630);
-  const [roomId, setRoomId] = useState<string>(SAMPLE_ROOMS[0].id);
+  const [roomId, setRoomId] = useState<string | null>(SAMPLE_ROOMS[0].id);
   const [startTime, setStartTime] = useState('11:00');
   const [endTime, setEndTime] = useState('12:00');
   const [result, setResult] = useState<AvailabilityResult | null>(null);
+  const [attendees, setAttendees] = useState('1');
+  const [equipment, setEquipment] = useState<string[]>([]);
 
-  const room = useMemo(() => SAMPLE_ROOMS.find((r) => r.id === roomId) ?? null, [roomId]);
+  const attendeesCount = parseAttendees(attendees);
+  const attendeesError = attendeesCount === null ? 'Enter a whole number of 1 or more.' : undefined;
+
+  const matches = useMemo(
+    () => (attendeesCount === null ? [] : filterRooms(SAMPLE_ROOMS, attendeesCount, equipment)),
+    [attendeesCount, equipment],
+  );
+  const showEmptyState = !hasSelectableRoom(matches);
+
+  // Only a room that is visible AND selectable can be the subject of a check (F3, F5).
+  const room = useMemo(
+    () => matches.find((m) => m.selectable && m.room.id === roomId)?.room ?? null,
+    [matches, roomId],
+  );
+
+  // F5: when filters hide (or block) the selected room, drop the selection and its result.
+  const applyFilters = (nextAttendees: string, nextEquipment: string[]) => {
+    setAttendees(nextAttendees);
+    setEquipment(nextEquipment);
+    const count = parseAttendees(nextAttendees);
+    const nextMatches = count === null ? [] : filterRooms(SAMPLE_ROOMS, count, nextEquipment);
+    if (!nextMatches.some((m) => m.selectable && m.room.id === roomId)) {
+      setRoomId(null);
+      setResult(null);
+    }
+  };
+  const toggleEquipment = (item: string) =>
+    applyFilters(attendees, equipment.includes(item) ? equipment.filter((e) => e !== item) : [...equipment, item]);
 
   const startMin = hhmmToMinutes(startTime);
   const endMin = hhmmToMinutes(endTime);
@@ -55,6 +87,8 @@ function App() {
     setStartTime('11:00');
     setEndTime('12:00');
     setResult(null);
+    setAttendees('1');
+    setEquipment([]);
   };
 
   return (
@@ -83,13 +117,35 @@ function App() {
             <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-500">
               1. Select a room
             </h2>
+            <RoomFilters
+              attendees={attendees}
+              attendeesError={attendeesError}
+              onAttendeesChange={(value) => applyFilters(value, equipment)}
+              options={EQUIPMENT_OPTIONS}
+              selected={equipment}
+              onToggle={toggleEquipment}
+            />
+            <p className="mb-2 text-xs text-slate-500" aria-live="polite">
+              {matches.length} of {SAMPLE_ROOMS.length} rooms match
+            </p>
             <div className="space-y-3">
-              {SAMPLE_ROOMS.map((r) => (
+              {showEmptyState && (
+                <EmptyState
+                  message={
+                    attendeesError
+                      ? 'Enter a valid number of attendees to see rooms.'
+                      : matches.length > 0
+                        ? 'Only blocked rooms match. Reduce attendees or remove some equipment.'
+                        : 'Reduce the number of attendees or remove some equipment.'
+                  }
+                />
+              )}
+              {matches.map(({ room: r, selectable }) => (
                 <RoomCard
                   key={r.id}
                   room={r}
-                  selected={r.id === roomId}
-                  disabled={false}
+                  selected={r.id === roomId && selectable}
+                  disabled={!selectable}
                   onSelect={selectRoom}
                 />
               ))}

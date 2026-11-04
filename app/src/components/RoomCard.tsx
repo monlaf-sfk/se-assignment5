@@ -13,6 +13,7 @@ export function RoomCard({ room, selected, disabled, onSelect }: Props) {
     <button
       type="button"
       disabled={disabled}
+      aria-pressed={selected}
       onClick={() => onSelect(room.id)}
       className={[
         'group relative w-full rounded-2xl border p-4 text-left transition-all duration-200',
@@ -20,7 +21,7 @@ export function RoomCard({ room, selected, disabled, onSelect }: Props) {
         selected
           ? 'border-sky-500 bg-sky-50 shadow-md ring-1 ring-sky-200'
           : 'border-slate-200 bg-white hover:border-slate-300 hover:shadow-sm',
-        disabled ? 'cursor-not-allowed opacity-60' : 'cursor-pointer',
+        disabled ? 'cursor-not-allowed bg-slate-50 opacity-60 hover:border-slate-200 hover:shadow-none' : 'cursor-pointer',
       ].join(' ')}
     >
       <div className="flex items-start justify-between gap-3">
@@ -45,6 +46,18 @@ export function RoomCard({ room, selected, disabled, onSelect }: Props) {
           </span>
         )}
       </div>
+      {room.equipment.length > 0 && (
+        <ul className="mt-2 flex flex-wrap gap-1.5" aria-label="Equipment">
+          {room.equipment.map((item) => (
+            <li key={item} className="rounded-md bg-slate-100 px-1.5 py-0.5 text-[11px] text-slate-600">
+              {item}
+            </li>
+          ))}
+        </ul>
+      )}
+      {room.blocked && room.blockReason && (
+        <p className="mt-2 text-[11px] text-red-600">{room.blockReason}</p>
+      )}
       {selected && (
         <span className="absolute right-3 top-3 text-sky-500">
           <CheckCircle2 className="h-4 w-4" />

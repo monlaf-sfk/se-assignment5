@@ -20,6 +20,13 @@ export function filterRooms(rooms: readonly Room[], attendees: number, equipment
     .map((room) => ({ room, selectable: !room.blocked }));
 }
 
+/** Attendees input → whole number >= 1, or null when invalid (empty, 0, negative, fractional). */
+export function parseAttendees(value: string): number | null {
+  if (!/^\d+$/.test(value.trim())) return null;
+  const n = Number(value);
+  return n >= 1 ? n : null;
+}
+
 export function hasSelectableRoom(matches: readonly RoomMatch[]): boolean {
   return matches.some((m) => m.selectable);
 }
