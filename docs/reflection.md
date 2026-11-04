@@ -1,11 +1,11 @@
-# Рефлексия по работе с AI (Task 6)
+# AI reflection (Task 6)
 
-Я работал с Claude Code (модель Opus 5.5) прямо в репозитории. В первом промпте дал карту файлов, критерии AC1–AC6 и F1–F5, ограничения (без логина, базы данных и API) и скриншот S4 с устаревшим результатом. Попросил сначала только анализ и план без кода, а дальше отправлял каждое изменение отдельным промптом.
+I worked with Claude Code (Opus 5.5) in the repository. In the first prompt I gave it a file map, the criteria AC1–AC6 and F1–F5, the constraints (no login, database or APIs) and screenshot S4 showing a stale result. I asked for analysis and a plan only, then sent every change as a separate prompt.
 
-Самым полезным оказался анализ: AI нашёл пять рисков со ссылками на строки, в том числе устаревший результат при смене комнаты и расчёт длительности в трёх местах. При проверке на ширине 375 px он заметил горизонтальный скролл, который был ещё в исходной версии и который я в A3 так и не проверил. Не всё я принял как есть. AI предлагал считать результат «вживую» без кнопки Check; я оставил кнопку и только сбрасываю результат, потому что это меньшее изменение. Однажды скриншот показал две выделенные карточки. Это была CSS-анимация, и AI выяснил это по DOM, но без такой проверки её легко принять за баг.
+The analysis was the most useful part: the AI found five risks with line references, including the stale result after switching rooms and the duration computed in three places. While checking the page at 375 px it noticed horizontal scrolling that already existed in the initial version and that I never verified in A3. I did not accept everything. The AI suggested computing the result live without the Check button; I kept the button and only clear the result, because that is a smaller change. Once a screenshot showed two highlighted room cards. It was a CSS transition, and the AI confirmed this from the DOM, otherwise it would have looked like a bug.
 
-Сам я проверил в браузере фильтры, пустое состояние и сброс выбора, запустил тесты в своём терминале, по diff убедился, что ожидания старых тестов не изменились, и прочитал в коде `>=` для вместимости и `every` для оборудования.
+I personally checked the filters, the empty state and the selection reset in the browser, ran the tests in my terminal, confirmed from the diff that old test expectations did not change, and read `>=` for capacity and `every` for equipment.
 
-Тесты определяли решения. 34 исходных теста я прогнал на финальном коде как страховку для рефакторинга. Мутационная проверка показала, что тесты ловят замену `>=` на `>` и удаление сброса результата. Дубли тестов я удалил: их стало 40 вместо 47, но ни один отдельный случай не потерян.
+Tests drove my decisions. I ran the 34 original tests on the final code as a safety net for refactoring. A mutation check showed that the tests catch replacing `>=` with `>` and removing the result reset. I removed duplicate tests: 40 instead of 47, with no distinct case lost.
 
-Дальше я бы вынес состояние из App.tsx в отдельный хук, добавил e2e-тест в настоящем браузере и убрал Python-копию правил.
+Next I would move the state out of App.tsx into a custom hook, add an end-to-end test in a real browser and remove the Python copy of the rules.

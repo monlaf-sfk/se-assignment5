@@ -1,10 +1,10 @@
-# E12 — Моё решение и проверка
+# E12 — My decision and verification
 
-**Моё решение:** принял UI.
+**My decision:** accepted the UI.
 
-**Проверил сам в браузере:** фильтры, empty state, серая заблокированная комната, сброс выбора при фильтрации.
+**Verified myself in the browser:** filters, empty state, greyed-out blocked room, selection reset when filtering.
 
-AI сам нашёл и исправил горизонтальный скролл на 375px (был и в исходной версии); я сверил скрины S8/T2_8. Скрины UI снимал AI через браузер, я их просмотрел.
+The AI found and fixed horizontal scrolling at 375 px by itself (the defect already existed in the initial version); I compared screenshots S8/T2_8. The UI screenshots were taken by the AI through browser automation; I reviewed them.
 
-Скрины: `E12_answer.png`, `T2_1` … `T2_8`, `S8_mobile_375_before_overflow.png` (описание — `evidence/T2_screens_notes.md`).
-Вывод тестов/сборки: `evidence/04_E12_vitest_build.txt`. Коммиты: `6959292` (UI), `86c6e3d` (fix 375px).
+Screenshots: `E12_answer.png`, `T2_1` … `T2_8`, `S8_mobile_375_before_overflow.png` (described in `evidence/T2_screens_notes.md`).
+Test/build output: `evidence/04_E12_vitest_build.txt`. Commits: `6959292` (UI), `86c6e3d` (375 px fix).

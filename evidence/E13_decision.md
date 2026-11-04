@@ -1,13 +1,13 @@
-# E13 — Моё решение и проверка
+# E13 — My decision and verification
 
-**Моё решение:** рефакторинг принял.
+**My decision:** accepted the refactoring.
 
-**Проверил сам:**
-- подсчёт дублирования повторил командами grep из `evidence/05_E13_duplication_before.txt` / `06_E13_duplication_after.txt` (было 2 формулы длительности и 2 проверки 120 мин, стало по одной);
-- тесты 47/47 без изменения ожиданий;
-- в браузере Available показывает «(60 min)», 121 мин даёт красную подпись.
+**Verified myself:**
+- repeated the duplication count with the grep commands from `evidence/05_E13_duplication_before.txt` / `06_E13_duplication_after.txt` (2 duration formulas and 2 120-minute checks before, one of each after);
+- tests 47/47 with no expectation changes;
+- in the browser Available shows "(60 min)" and 121 minutes gives the red label.
 
-Python-копию правил не удалял: она вне рантайма, указываю её как оставшееся ограничение.
+I did not delete the Python copy of the rules: it is outside the runtime, and I list it as a remaining limitation.
 
-Скрины: `E13_prompt_diff.png`, `E13_answer.png`. Диаграмма и обоснование: `docs/architecture.md`.
-Вывод тестов/сборки: `evidence/07_E13_tests_build.txt`. Коммит: `074f99c`.
+Screenshots: `E13_prompt_diff.png`, `E13_answer.png`. Diagram and rationale: `docs/architecture.md`.
+Test/build output: `evidence/07_E13_tests_build.txt`. Commit: `074f99c`.

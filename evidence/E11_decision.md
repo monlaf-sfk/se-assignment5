@@ -1,9 +1,9 @@
-# E11 — Моё решение и проверка
+# E11 — My decision and verification
 
-**Моё решение:** F3 — заблокированную комнату показываю серой, а не скрываю, чтобы пользователь видел, почему она недоступна.
+**My decision:** F3 — a blocked room is shown greyed out instead of hidden, so the user can see why it is unavailable.
 
-**Проверил сам:** в `filtering.ts` — `>=` (а не `>`) для F1 и `every` (а не `some`) для F2. Тесты у себя: 47/47.
+**Verified myself:** in `filtering.ts` — `>=` (not `>`) for F1 and `every` (not `some`) for F2. Tests on my machine: 47/47.
 
-Изменение старых тестов (только `equipment: []`) принял: проверил по diff, что сами случаи не тронуты.
+I accepted the change to the old tests (only `equipment: []` added to the fixtures): I checked in the diff that the test cases themselves were not touched.
 
-Скрины: `E11_prompt_diff.png`, `E11_answer.png`. Вывод тестов: `evidence/03_E11_vitest.txt`. Коммит: `42fab21`.
+Screenshots: `E11_prompt_diff.png`, `E11_answer.png`. Test output: `evidence/03_E11_vitest.txt`. Commit: `42fab21`.
