@@ -1,0 +1,12 @@
+$ npx vitest run
+
+ RUN  v1.6.1 /Users/rasulkerimzhanov/Desktop/university/software_e/assignment4/initial/bolt/project
+
+ ✓ src/lib/availability.ai.test.ts  (15 tests) 2ms
+ ✓ src/lib/availability.test.ts  (19 tests) 3ms
+
+ Test Files  2 passed (2)
+      Tests  34 passed (34)
+   Start at  18:32:04
+   Duration  158ms (transform 27ms, setup 0ms, collect 38ms, tests 5ms, environment 0ms, prepare 111ms)
+
