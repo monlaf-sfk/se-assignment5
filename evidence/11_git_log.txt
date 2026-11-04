@@ -1,0 +1,16 @@
+$ git log --reverse --format="%h %ad %s" --date=iso
+905d50f 2026-11-04 18:32:12 +0500 chore: import initial version (A3 Python core + Practice 06/07 Bolt export)
+3fbadf0 2026-11-04 18:44:02 +0500 chore: copy initial Bolt project to app/ as working copy
+a5c7cc5 2026-11-04 18:44:27 +0500 fix(app): clear availability result when room or time changes (F5)
+42fab21 2026-11-04 18:52:42 +0500 feat(app): add room equipment and pure filterRooms (F1-F4)
+6959292 2026-11-04 19:00:54 +0500 feat(app): room filters UI with empty state and blocked rooms greyed out
+86c6e3d 2026-11-04 19:05:46 +0500 fix(app): prevent horizontal overflow at 375px (AC6)
+074f99c 2026-11-04 19:11:00 +0500 refactor(app): single source for duration rule, remove duplicated logic
+d508845 2026-11-04 19:16:12 +0500 test(app): consolidate AC suite, add duration helper and UI integration tests
+fcc5f62 2026-11-04 19:17:28 +0500 docs: add README with setup, run and test commands
+a6ab993 2026-11-04 19:18:07 +0500 docs(evidence): E14 decision and own test run screenshot
+b915114 2026-11-04 19:18:38 +0500 docs: add AI reflection draft (Task 6)
+bc2f95b 2026-11-04 19:20:14 +0500 docs: translate reflection and E9-E14 decisions to English
+0503be4 2026-11-04 19:24:41 +0500 docs: English report and AI evidence appendix (HTML sources and PDFs)
+
+Initial version: 905d50f (initial/). Final version: app/ at the last commit.
