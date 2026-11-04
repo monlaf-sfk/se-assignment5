@@ -1,0 +1,149 @@
+import { useMemo, useState } from 'react';
+import { Building2, Clock3, RotateCcw } from 'lucide-react';
+import { SAMPLE_ROOMS } from '@/data';
+import type { AvailabilityResult } from '@/types';
+import { checkAvailability } from '@/lib/availability';
+import { hhmmToMinutes, MAX_BOOKING_MINUTES, minutesToHHMM } from '@/lib/time';
+import { RoomCard } from '@/components/RoomCard';
+import { Timeline } from '@/components/Timeline';
+import { TimeInput } from '@/components/TimeInput';
+import { ResultBanner } from '@/components/ResultBanner';
+
+function App() {
+  // Current time as minutes from midnight (fictional "now" = 10:30)
+  const [currentTime] = useState(630);
+  const [roomId, setRoomId] = useState<string>(SAMPLE_ROOMS[0].id);
+  const [startTime, setStartTime] = useState('11:00');
+  const [endTime, setEndTime] = useState('12:00');
+  const [result, setResult] = useState<AvailabilityResult | null>(null);
+
+  const room = useMemo(() => SAMPLE_ROOMS.find((r) => r.id === roomId) ?? null, [roomId]);
+
+  const startMin = hhmmToMinutes(startTime);
+  const endMin = hhmmToMinutes(endTime);
+
+  const startError = startMin === null ? 'Invalid time' : undefined;
+  const endError = endMin === null ? 'Invalid time' : undefined;
+
+  const duration = startMin !== null && endMin !== null && endMin > startMin ? endMin - startMin : null;
+
+  const handleCheck = () => {
+    if (!room || startMin === null || endMin === null) {
+      setResult({ available: false, reason: 'Please select a room and valid times.' });
+      return;
+    }
+    setResult(checkAvailability({ room, start: startMin, end: endMin, currentTime }));
+  };
+
+  const handleReset = () => {
+    setRoomId(SAMPLE_ROOMS[0].id);
+    setStartTime('11:00');
+    setEndTime('12:00');
+    setResult(null);
+  };
+
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100">
+      <div className="mx-auto max-w-5xl px-3 py-6 sm:px-6 sm:py-8 lg:py-12">
+        {/* Header */}
+        <header className="mb-6 flex flex-col items-start gap-3 sm:mb-8 sm:flex-row sm:items-center sm:justify-between sm:gap-1">
+          <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-sky-600 text-white shadow-sm sm:h-11 sm:w-11">
+              <Building2 className="h-5 w-5 sm:h-6 sm:w-6" />
+            </div>
+            <div>
+              <h1 className="text-xl font-bold text-slate-900 sm:text-2xl">Smart Campus Room Checker</h1>
+              <p className="text-sm text-slate-500">Check room availability before you book</p>
+            </div>
+          </div>
+          <div className="mt-2 inline-flex items-center gap-2 rounded-full bg-white px-3 py-1.5 text-xs font-medium text-slate-600 shadow-sm sm:mt-0">
+            <Clock3 className="h-4 w-4 text-sky-600" />
+            Current time: <span className="font-semibold text-slate-800">{minutesToHHMM(currentTime)}</span>
+          </div>
+        </header>
+
+        <div className="grid gap-4 sm:gap-6 lg:grid-cols-5">
+          {/* Left: Room selection */}
+          <section className="lg:col-span-2">
+            <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-500">
+              1. Select a room
+            </h2>
+            <div className="space-y-3">
+              {SAMPLE_ROOMS.map((r) => (
+                <RoomCard
+                  key={r.id}
+                  room={r}
+                  selected={r.id === roomId}
+                  disabled={false}
+                  onSelect={setRoomId}
+                />
+              ))}
+            </div>
+          </section>
+
+          {/* Right: Time + result */}
+          <section className="lg:col-span-3">
+            <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-500">
+              2. Enter a time range
+            </h2>
+
+            <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+              <div className="flex flex-col gap-4 sm:flex-row sm:items-end">
+                <TimeInput label="Start time" value={startTime} onChange={setStartTime} error={startError} />
+                <TimeInput label="End time" value={endTime} onChange={setEndTime} error={endError} />
+                <div className="flex gap-2 sm:flex-none">
+                  <button
+                    type="button"
+                    onClick={handleCheck}
+                    className="flex-1 rounded-lg bg-sky-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-sky-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400 sm:py-2"
+                  >
+                    Check
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleReset}
+                    className="rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm font-medium text-slate-600 transition hover:bg-slate-50 sm:py-2"
+                    title="Reset"
+                  >
+                    <RotateCcw className="h-4 w-4" />
+                  </button>
+                </div>
+              </div>
+
+              <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-xs text-slate-500">
+                <span>Max booking: {MAX_BOOKING_MINUTES} min</span>
+                <span>Day window: 00:00–24:00</span>
+                {duration !== null && (
+                  <span className={duration > MAX_BOOKING_MINUTES ? 'font-semibold text-red-600' : 'font-semibold text-slate-700'}>
+                    Your duration: {duration} min
+                  </span>
+                )}
+              </div>
+            </div>
+
+            {/* Result */}
+            <div className="mt-4">
+              <ResultBanner result={result} duration={duration} />
+            </div>
+
+            {/* Timeline */}
+            <div className="mt-4">
+              <Timeline
+                room={room}
+                candidateStart={startMin}
+                candidateEnd={endMin}
+                available={result?.available ?? null}
+              />
+            </div>
+          </section>
+        </div>
+
+        <footer className="mt-8 text-center text-xs text-slate-400 sm:mt-10">
+          Uses fictional sample data. No bookings are actually created.
+        </footer>
+      </div>
+    </div>
+  );
+}
+
+export default App;
