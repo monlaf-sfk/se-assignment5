@@ -1,0 +1,14 @@
+$ npx vitest run
+
+ RUN  v1.6.1 /Users/rasulkerimzhanov/Desktop/university/software_e/assignment4/app
+
+ ✓ src/lib/roomSelection.test.ts  (2 tests) 1ms
+ ✓ src/lib/availability.ai.test.ts  (15 tests) 2ms
+ ✓ src/lib/filtering.test.ts  (11 tests) 2ms
+ ✓ src/lib/availability.test.ts  (19 tests) 2ms
+
+ Test Files  4 passed (4)
+      Tests  47 passed (47)
+   Start at  18:52:42
+   Duration  185ms (transform 47ms, setup 0ms, collect 66ms, tests 7ms, environment 0ms, prepare 112ms)
+

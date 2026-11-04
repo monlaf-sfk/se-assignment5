@@ -9,6 +9,7 @@ export interface Room {
   name: string;
   building: string;
   capacity: number;
+  equipment: string[];
   blocked: boolean;
   blockReason?: string;
   bookings: Booking[];

@@ -14,6 +14,7 @@ function makeRoom(overrides: Partial<Room> = {}): Room {
     name: 'Test Room',
     building: 'Test',
     capacity: 10,
+    equipment: [],
     blocked: false,
     bookings: [{ start: 600, end: 660, label: 'Sample booking' }],
     ...overrides,
