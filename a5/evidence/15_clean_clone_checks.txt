@@ -1,0 +1,155 @@
+# Clean-clone reproducibility check: git clone <repo> && git checkout a5-final && scripts/run-checks.sh
+# Clean clone of tag a5-final — commit 0ef6f33 — 2026-11-18 18:30 +05
+# node v26.13.0, npm 11.20.0, Darwin arm64
+
+$ npm ci --no-audit --no-fund
+npm warn deprecated whatwg-encoding@3.1.1: Use @exodus/bytes instead for a more spec-conformant and faster implementation
+
+added 405 packages in 2s
+npm warn install-scripts 2 packages have install scripts not yet covered by allowScripts:
+npm warn install-scripts   esbuild@0.21.5 (postinstall: node install.js)
+npm warn install-scripts   fsevents@2.3.3 (install: (install scripts present))
+npm warn install-scripts
+npm warn install-scripts Run `npm install-scripts ls` to review, or `npm install-scripts approve <pkg>` to allow.
+[exit code: 0]
+
+$ npx vitest run --reporter=verbose
+
+ RUN  v1.6.1 /private/tmp/claude-501/-Users-rasulkerimzhanov-Projects-university/d807e5d1-f189-432e-9a00-365c46e84d59/scratchpad/clean-clone/app
+
+ ✓ src/lib/roomSelection.test.ts > F5 — check uses the selected room bookings > F5: same interval is unavailable in lib-201 (own booking 780–840)
+ ✓ src/lib/roomSelection.test.ts > F5 — check uses the selected room bookings > F5: switching to arts-05 gives a different result for the same interval
+ ✓ src/lib/selection.test.ts > matchRooms > invalid attendees input yields no matches
+ ✓ src/lib/selection.test.ts > matchRooms > valid input delegates to filterRooms (capacity + all equipment)
+ ✓ src/lib/selection.test.ts > findSelectableRoom > returns the selected room while it is visible and selectable
+ ✓ src/lib/selection.test.ts > findSelectableRoom > blocked room is never returned (F3)
+ ✓ src/lib/selection.test.ts > findSelectableRoom > room hidden by filters is dropped (F5)
+ ✓ src/lib/selection.test.ts > findSelectableRoom > no selection stays no selection
+ ✓ src/lib/filtering.test.ts > F1 — capacity >= attendees > F1: exact capacity is enough (capacity 8, 8 attendees)
+ ✓ src/lib/filtering.test.ts > F1 — capacity >= attendees > F1: insufficient capacity is excluded (capacity 8, 9 attendees)
+ ✓ src/lib/filtering.test.ts > F2 — room has ALL selected equipment > F2: room with a superset of the selection matches
+ ✓ src/lib/filtering.test.ts > F2 — room has ALL selected equipment > F2: room with only part of the selection is excluded
+ ✓ src/lib/filtering.test.ts > F2 — room has ALL selected equipment > F2: empty selection matches every room that passes F1
+ ✓ src/lib/filtering.test.ts > F3 — blocked room is listed but never selectable > F3: blocked room has selectable = false, others true
+ ✓ src/lib/filtering.test.ts > F3 — blocked room is listed but never selectable > F3: only a blocked room matches → no selectable room
+ ✓ src/lib/filtering.test.ts > F4 — empty result (data case) > F4: no room has enough capacity → empty array
+ ✓ src/lib/filtering.test.ts > F4 — empty result (data case) > F4: no room has the equipment combination → empty array
+ ✓ src/lib/filtering.test.ts > Immutability and catalog > filterRooms does not mutate rooms or the equipment selection
+ ✓ src/lib/filtering.test.ts > Immutability and catalog > catalog: at least 4 rooms, unique ids, one blocked, each with equipment and own bookings
+ ✓ src/lib/availability.test.ts > AC1 — time range > T02: 540–570 starts exactly now → Unavailable
+ ✓ src/lib/availability.test.ts > AC1 — time range > T03: 720–720 zero duration → Unavailable
+ ✓ src/lib/availability.test.ts > AC1 — time range > T04: 750–720 reversed → Unavailable
+ ✓ src/lib/availability.test.ts > AC1 — time range > T05: 1380–1441 past day end → Unavailable
+ ✓ src/lib/availability.test.ts > AC1 — time range > A3-1: 1380–1440 ends exactly at midnight → Available
+ ✓ src/lib/availability.test.ts > AC1 — time range > A3-2: -10–30 negative start → Unavailable
+ ✓ src/lib/availability.test.ts > AC1 — time range > C2 (own): 541–600 starts one minute after now → Available
+ ✓ src/lib/availability.test.ts > AC2 — duration > T06: 720–840 exactly 120 min → Available, result carries the duration
+ ✓ src/lib/availability.test.ts > AC2 — duration > T07: 720–841 121 min → Unavailable
+ ✓ src/lib/availability.test.ts > AC2 — duration > exceedsMaxDuration: 120 is allowed, 121 is not (single 120-min decision)
+ ✓ src/lib/availability.test.ts > AC2 — duration > durationOf: positive length, null for empty, reversed or missing ends
+ ✓ src/lib/availability.test.ts > AC3 — blocked room > T13: 660–720, blocked = true → Unavailable
+ ✓ src/lib/availability.test.ts > AC3 — blocked room > T13b (from ai suite): blocked with a reason → reason is shown
+ ✓ src/lib/availability.test.ts > AC4 — overlap > T01: 660–720 touching after → Available, no conflict
+ ✓ src/lib/availability.test.ts > AC4 — overlap > T08: 570–600 touching before → Available
+ ✓ src/lib/availability.test.ts > AC4 — overlap > T09: 630–690 partial overlap → Unavailable
+ ✓ src/lib/availability.test.ts > AC4 — overlap > T10: 570–690 contains booking → Unavailable
+ ✓ src/lib/availability.test.ts > AC4 — overlap > T11: 615–645 inside booking → Unavailable
+ ✓ src/lib/availability.test.ts > AC4 — overlap > T12: 600–660 identical interval → Unavailable
+ ✓ src/lib/availability.test.ts > AC4 — overlap > T14: 630–690, bookings = [] → Available
+ ✓ src/lib/availability.test.ts > AC4 — overlap > C1 (own): 660–720 between two bookings, touching both → Available
+ ✓ src/lib/availability.test.ts > AC4 — overlap > C3 (own): overlap with the second booking only → Unavailable
+ ✓ src/lib/availability.test.ts > AC5 — data preservation > AC5: repeated checks leave the room and its bookings unchanged
+ ✓ src/lib/availability.test.ts > AC5 — data preservation > AC5: frozen bookings do not cause errors (no mutation attempted)
+ ✓ src/App.test.tsx > App — filter → select → check → switch room > F1/F2/F3/F5 + AC4: result follows the selected room
+ ✓ src/App.test.tsx > App — filter → select → check → switch room > F4: impossible filter shows the empty state
+ ✓ src/App.test.tsx > App — filter → select → check → switch room > F5: filter that hides the selected room clears selection and result
+ ✓ src/App.test.tsx > A5 mitigation M1 — time inputs are labelled and explain invalid values > start and end inputs are reachable by their visible labels
+ ✓ src/App.test.tsx > A5 mitigation M1 — time inputs are labelled and explain invalid values > a cleared time shows a visible, linked error and Check names the real problem
+ ✓ src/App.test.tsx > A5 mitigation M1 — time inputs are labelled and explain invalid values > no room selected: Check asks for a room, not for times
+
+ Test Files  5 passed (5)
+      Tests  49 passed (49)
+   Start at  18:30:05
+   Duration  690ms (transform 78ms, setup 0ms, collect 198ms, tests 325ms, environment 123ms, prepare 147ms)
+[exit code: 0]
+
+$ npm run typecheck
+
+> vite-react-typescript-starter@0.0.0 typecheck
+> tsc --noEmit -p tsconfig.app.json
+[exit code: 0]
+
+$ npm run lint
+
+> vite-react-typescript-starter@0.0.0 lint
+> eslint .
+[exit code: 0]
+
+$ npm run build
+
+> vite-react-typescript-starter@0.0.0 build
+> vite build
+
+vite v5.4.8 building for production...
+transforming...
+Browserslist: caniuse-lite is outdated. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+✓ 1579 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                   0.71 kB │ gzip:  0.39 kB
+dist/assets/index-BJmfksjr.css   17.58 kB │ gzip:  4.04 kB
+dist/assets/index-BWhvzX1I.js   164.23 kB │ gzip: 52.00 kB
+✓ built in 709ms
+[exit code: 0]
+
+$ npm audit --omit=dev
+found 0 vulnerabilities
+[exit code: 0]
+
+$ npm audit
+node_modules/postcss-selector-parser
+
+rollup  4.0.0 - 4.58.0
+Severity: high
+Rollup 4 has Arbitrary File Write via Path Traversal - https://github.com/advisories/GHSA-mw96-cpmx-2vgc
+fix available via `npm audit fix`
+node_modules/rollup
+
+source-map-js  1.0.0 - 1.2.1
+Severity: high
+source-map-js allows event-loop denial of service through indexed source-map section offsets - https://github.com/advisories/GHSA-68fv-2mgg-jv7q
+fix available via `npm audit fix`
+node_modules/source-map-js
+
+tinypool  <=2.1.1
+Severity: critical
+Tinypool: Prototype Pollution gadget in worker options leads to Remote Code Execution - https://github.com/advisories/GHSA-5gmw-xhrv-c9v3
+Tinypool: Prototype Pollution Gadget to RCE in run() options - https://github.com/advisories/GHSA-85c8-ppgw-ccpr
+fix available via `npm audit fix --force`
+Will install vitest@5.1.1, which is a breaking change
+node_modules/tinypool
+  vitest  <=4.0.0-beta.19
+  Depends on vulnerable versions of tinypool
+  node_modules/vitest
+
+
+
+yaml  2.0.0 - 2.8.2
+Severity: moderate
+yaml is vulnerable to Stack Overflow via deeply nested YAML collections - https://github.com/advisories/GHSA-48c2-rrv3-qjmp
+fix available via `npm audit fix`
+node_modules/yaml
+
+23 vulnerabilities (2 low, 6 moderate, 13 high, 2 critical)
+
+To address issues that do not require attention, run:
+  npm audit fix
+
+To address all issues (including breaking changes), run:
+  npm audit fix --force
+[exit code: 1]
+
+# gates (ci, test, typecheck, lint, build): PASS
+[script exit code: 0]

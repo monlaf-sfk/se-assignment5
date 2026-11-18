@@ -15,7 +15,7 @@ small and uses fictional data only, with no secrets or personal data.
 | Pattern decision | `a817034` refactor(app): extract room selection rule into lib/selection |
 | Mitigation M1 | `b66ba57` fix(app): label time inputs and show why a time is invalid |
 | Mitigation M2 | `1af25cc` fix(agents): enforce quality gate and resolve conflicting agent rules |
-| Final | `main` (merge `54f4967` of branch `a5/mitigations` and the evidence commits after it) |
+| Final | tag `a5-final` on `main` (merge `54f4967` of branch `a5/mitigations` + report commit); reproduced from a clean clone in `E:15_clean_clone_checks.txt` |
 
 All evidence files referenced as `E:<file>` live in `a5/evidence/`. Screenshots are in `a5/evidence/screens/`.
 
@@ -311,6 +311,7 @@ by me, then merged with `--no-ff` (`54f4967`).
 | After refactor | `a817034` | 5 passed | 46 passed (46) | pass | pass | pass | — | — |
 | M1 red | working tree | 5 | 3 failed / 46 passed (49) | — | — | — | — | — |
 | Final | `54f4967` | 5 passed | **49 passed (49)** | pass | pass | pass | 0 | 23 (unchanged) |
+| Clean clone of tag `a5-final` | `0ef6f33` | 5 passed | **49 passed (49)** | pass | pass | pass | 0 | 23 (unchanged) |
 
 **Not executed:** CI (there is no remote), Chrome and Safari, automated browser e2e (Playwright not
 installed, because it would be an unreviewed dependency change), the Vite/Vitest upgrade, and a
