@@ -14,6 +14,7 @@ def inline(text: str) -> str:
     t = re.sub(r"\*\*(.+?)\*\*", r"<strong>\1</strong>", t)
     t = re.sub(r"(?<![\w*])\*(?!\s)(.+?)(?<!\s)\*(?![\w*])", r"<em>\1</em>", t)
     t = re.sub(r"\[([^\]]+)\]\(([^)]+)\)", r'<a href="\2">\1</a>', t)
+    t = re.sub(r"(?<![\"=>])(https://[^\s<)]+)", r'<a href="\1">\1</a>', t)  # autolink
     return re.sub(r"\x00(\d+)\x00", lambda m: codes[int(m.group(1))], t)
 
 

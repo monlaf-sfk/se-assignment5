@@ -1,10 +1,11 @@
 # Assignment #05 — AI-assisted repository customization, agent readiness and risk governance
 
 **Student:** Kerimzhanov Rassul · **Course:** Software Engineering · **Date:** 2026-11-18
+
 **AI assistant:** Claude Code (model Claude Opus 5.5, Anthropic), including one read-only sub-agent
 for the risk review. Firefox DevTools MCP was used for real-browser checks and screenshots.
 
-**Repository:** `software_e/assignment5` (git). It is a clone of my Assignment 4 repository,
+**Repository:** https://github.com/monlaf-sfk/se-assignment5 (public). It is a clone of my Assignment 4 repository,
 "Smart Campus Room Availability Checker" (React 18 + TypeScript + Vite 5 + Vitest 1). The app is
 small and uses fictional data only, with no secrets or personal data.
 
@@ -16,6 +17,8 @@ small and uses fictional data only, with no secrets or personal data.
 | Mitigation M1 | `b66ba57` fix(app): label time inputs and show why a time is invalid |
 | Mitigation M2 | `1af25cc` fix(agents): enforce quality gate and resolve conflicting agent rules |
 | Final | tag `a5-final` on `main` (merge `54f4967` of branch `a5/mitigations` + report commit); reproduced from a clean clone in `E:15_clean_clone_checks.txt` |
+
+Baseline tree: https://github.com/monlaf-sfk/se-assignment5/tree/a5-baseline · Final tree: https://github.com/monlaf-sfk/se-assignment5/tree/a5-final · All Assignment 5 changes: https://github.com/monlaf-sfk/se-assignment5/compare/a5-baseline...a5-final
 
 All evidence files referenced as `E:<file>` live in `a5/evidence/`. Screenshots are in `a5/evidence/screens/`.
 
