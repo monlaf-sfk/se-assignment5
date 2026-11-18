@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+# Review gate (A5 mitigation M2): block commits that touch app/ unless all quality gates pass.
+# Enable once per clone:  git config core.hooksPath .githooks
+set -euo pipefail
+log="$(mktemp -t a5-precommit)"
+if git diff --cached --name-only | grep -q '^app/'; then
+  echo "pre-commit: app/ changed -> running npm run check (typecheck, lint, tests, build)"
+  if ! npm --prefix app run check --silent >"$log" 2>&1; then
+    tail -n 25 "$log"
+    echo "pre-commit: BLOCKED — quality gates failed. Fix the cause; do not use --no-verify." >&2
+    exit 1
+  fi
+  grep -E "Tests +[0-9]" "$log" || true
+fi

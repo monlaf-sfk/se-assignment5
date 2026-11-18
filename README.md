@@ -20,7 +20,7 @@ Git: initial version = commit `905d50f`, final version = latest commit on `main`
 
 ## Requirements
 
-- Node.js 18 or newer (tested with Node 26.10.0, npm 11.19.1)
+- Node.js 20 or newer (`app/.nvmrc`; tested with Node 26.13.0, npm 11.20.0)
 - Python 3 only if you want to look at the legacy `initial/booking.py` (not used by the app)
 
 ## Setup and run (final version)
