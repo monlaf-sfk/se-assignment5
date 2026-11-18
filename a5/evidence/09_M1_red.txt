@@ -1,0 +1,5 @@
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+ FAIL  src/App.test.tsx > A5 mitigation M1 — time inputs are labelled and explain invalid values > start and end inputs are reachable by their visible labels
+ FAIL  src/App.test.tsx > A5 mitigation M1 — time inputs are labelled and explain invalid values > a cleared time shows a visible, linked error and Check names the real problem
+ FAIL  src/App.test.tsx > A5 mitigation M1 — time inputs are labelled and explain invalid values > no room selected: Check asks for a room, not for times
+      Tests  3 failed | 46 passed (49)

@@ -1,0 +1,31 @@
+# M2 verification — pre-commit gate
+
+$ git config core.hooksPath
+.githooks
+
+## Positive case: commit M2 itself (app/.bolt removal is staged -> gate runs)
+$ git commit -m "fix(agents): enforce review gate ... (M2)"
+pre-commit: app/ changed -> running npm run check (typecheck, lint, tests, build)
+      Tests  49 passed (49)
+[a5/mitigations 1af25cc] fix(agents): enforce quality gate and resolve conflicting agent rules (M2)
+ 6 files changed, 32 insertions(+), 17 deletions(-)
+ create mode 100755 .githooks/pre-commit
+ delete mode 100644 app/.bolt/config.json
+ delete mode 100644 app/.bolt/prompt
+[exit code: 0]
+1af25cc fix(agents): enforce quality gate and resolve conflicting agent rules (M2)
+
+## Negative case: mutation 'exactly 120 allowed' -> '>=' (120 rejected), staged and committed
+ app/src/lib/availability.ts | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+$ git commit -m "test: should be blocked"
+pre-commit: app/ changed -> running npm run check (typecheck, lint, tests, build)
+ FAIL  src/lib/availability.test.ts > AC4 — overlap > T10: 570–690 contains booking → Unavailable
+AssertionError: expected 'Bookings cannot exceed 120 minutes. Y…' to match /Overlaps/
+      Tests  3 failed | 46 passed (49)
+pre-commit: BLOCKED — quality gates failed. Fix the cause; do not use --no-verify.
+[exit code: 1]
+$ git log --oneline -1   (unchanged = commit was blocked)
+1af25cc fix(agents): enforce quality gate and resolve conflicting agent rules (M2)
+Updated 1 path from the index
+$ git status --short app/  (mutation reverted)

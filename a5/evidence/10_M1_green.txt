@@ -1,0 +1,19 @@
+# M1 GREEN — after fix (branch a5/mitigations)
+
+$ git diff --stat
+ app/src/App.test.tsx             | 30 ++++++++++++++++++++++++++++++
+ app/src/App.tsx                  | 12 ++++++++----
+ app/src/components/TimeInput.tsx | 16 +++++++++++++++-
+ 3 files changed, 53 insertions(+), 5 deletions(-)
+
+$ cd app && npm run check
+ ✓ src/lib/roomSelection.test.ts  (2 tests) 1ms
+ ✓ src/lib/filtering.test.ts  (11 tests) 2ms
+ ✓ src/lib/selection.test.ts  (6 tests) 2ms
+ ✓ src/lib/availability.test.ts  (24 tests) 3ms
+ ✓ src/App.test.tsx  (6 tests) 328ms
+ Test Files  5 passed (5)
+      Tests  49 passed (49)
+✓ 1579 modules transformed.
+✓ built in 669ms
+[exit code: 0]

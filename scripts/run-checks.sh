@@ -4,7 +4,7 @@
 set -u
 cd "$(dirname "$0")/../app" || exit 1
 label="${1:-checks}"
-echo "# ${label} — commit $(git rev-parse --short HEAD)$(git diff --quiet HEAD -- . || echo ' (+uncommitted)') — $(date '+%Y-%m-%d %H:%M %Z')"
+echo "# ${label} — commit $(git rev-parse --short HEAD)$([ -z "$(git status --porcelain -- .)" ] || echo ' (+uncommitted or untracked files)') — $(date '+%Y-%m-%d %H:%M %Z')"
 echo "# node $(node -v), npm $(npm -v), $(uname -sm)"
 overall=0
 run() {
@@ -15,7 +15,7 @@ run() {
   return $code
 }
 run npm ci --no-audit --no-fund || overall=1
-run npx vitest run || overall=1
+TAIL=60 run npx vitest run --reporter=verbose || overall=1
 run npm run typecheck || overall=1
 run npm run lint || overall=1
 run npm run build || overall=1
