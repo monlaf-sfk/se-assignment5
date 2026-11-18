@@ -1,0 +1,57 @@
+* 153f889 2026-11-18 18:30 docs(a5): add clean-clone reproducibility evidence
+* 0ef6f33 2026-11-18 18:29 docs(a5): report, risk register, readiness audit and evidence
+*   54f4967 2026-11-18 18:23 merge: Assignment 5 mitigations M1 and M2
+|\  
+| * 6b3ee86 2026-11-18 18:23 docs(a5): AI review output, claim verification and M2 gate evidence
+| * 1af25cc 2026-11-18 18:23 fix(agents): enforce quality gate and resolve conflicting agent rules (M2)
+| * b66ba57 2026-11-18 18:21 fix(app): label time inputs and show why a time is invalid (M1)
+|/  
+* 8b40edf 2026-11-18 18:20 docs(a5): baseline, probe and risk evidence
+* a817034 2026-11-18 18:18 refactor(app): extract room selection rule into lib/selection
+* 6a721e1 2026-11-18 18:17 docs(agents): add AGENTS.md, acceptance criteria and check script
+* cb0762a 2026-11-04 19:24 docs(evidence): add git history log
+* 0503be4 2026-11-04 19:24 docs: English report and AI evidence appendix (HTML sources and PDFs)
+* bc2f95b 2026-11-04 19:20 docs: translate reflection and E9-E14 decisions to English
+ .githooks/pre-commit                               |   14 +
+ AGENTS.md                                          |  119 ++
+ CLAUDE.md                                          |    3 +
+ README.md                                          |   20 +-
+ a5/A5_Kerimzhanov_Rassul_Report.pdf                |  Bin 0 -> 1108346 bytes
+ a5/ACCEPTANCE.md                                   |   12 +
+ a5/REPORT.md                                       |  418 +++++
+ ...#10 - Software Engineering - Assignment #05.pdf |  Bin 0 -> 393759 bytes
+ a5/evidence/01_baseline_checks.txt                 |  108 ++
+ a5/evidence/01b_baseline_npm_audit.json            | 1641 ++++++++++++++++++++
+ a5/evidence/02_repo_map.txt                        |  105 ++
+ a5/evidence/03_pattern_before.txt                  |   22 +
+ a5/evidence/04_pattern_after.txt                   |   59 +
+ a5/evidence/05_probe_time_input.txt                |   45 +
+ a5/evidence/06_favicon_check.txt                   |   11 +
+ a5/evidence/07_browser_time_input.txt              |   27 +
+ a5/evidence/08_risk_evidence.txt                   |   34 +
+ a5/evidence/08b_audit_table.txt                    |   23 +
+ a5/evidence/09_M1_red.txt                          |    5 +
+ a5/evidence/10_M1_green.txt                        |   19 +
+ a5/evidence/10b_M1_diff.patch                      |  111 ++
+ a5/evidence/11_ai_risk_review.md                   |   53 +
+ a5/evidence/12_verify_ai_claims.txt                |   51 +
+ a5/evidence/13_M2_gate_verification.txt            |   31 +
+ a5/evidence/14_final_checks.txt                    |  153 ++
+ a5/evidence/15_clean_clone_checks.txt              |  155 ++
+ a5/evidence/screens/S1_after_refactor_desktop.png  |  Bin 0 -> 366081 bytes
+ a5/evidence/screens/S2_M1_invalid_time_desktop.png |  Bin 0 -> 324163 bytes
+ a5/evidence/screens/S3_M1_invalid_time_375px.png   |  Bin 0 -> 135109 bytes
+ .../screens/S4_baseline_invalid_time_375px.png     |  Bin 0 -> 131267 bytes
+ a5/report.html                                     |  131 ++
+ app/.bolt/config.json                              |    3 -
+ app/.bolt/prompt                                   |    7 -
+ app/.nvmrc                                         |    1 +
+ app/package.json                                   |    6 +-
+ app/src/App.test.tsx                               |   30 +
+ app/src/App.tsx                                    |   29 +-
+ app/src/components/TimeInput.tsx                   |   16 +-
+ app/src/lib/selection.test.ts                      |   36 +
+ app/src/lib/selection.ts                           |   20 +
+ scripts/md2html.py                                 |  133 ++
+ scripts/run-checks.sh                              |   25 +
+ 42 files changed, 3647 insertions(+), 29 deletions(-)
