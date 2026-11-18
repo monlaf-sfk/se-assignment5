@@ -1,0 +1,51 @@
+# Verification of AI claims in a detached worktree at a817034 (pre-M1 code), node_modules symlinked
+
+## R-AI-03: getByDisplayValue when start == end
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+"TestingLibraryElementError: Found multiple elements with the display value: 12:00.
+      Tests  1 failed (1)
+
+## R-AI-05: typo in data.ts equipment ('video-conf' -> 'video-conference' for hub-02)
+61:    equipment: ['whiteboard', 'video-conference'],
+$ npm run typecheck
+[exit code: 0]
+$ npx vitest run (without the verify file)
+      Tests  46 passed (46)
+
+## R-AI-06: eslint-plugin-react-hooks version in lockfile
+$ npm ls eslint-plugin-react-hooks
+
+
+## R-AI-07: vite advisories and nearest non-major fix
+$ npm audit --json | (vite entry: range, advisories)
+range <=6.4.3
+  https://github.com/advisories/GHSA-vg6x-rcgg-rjx6 Websites were able to send any requests to the development server and read the response in vite | vulnerable: >=5.0.0 <=5.4.11
+  https://github.com/advisories/GHSA-x574-m823-4x7w Vite bypasses server.fs.deny when using ?raw?? | vulnerable: >=5.0.0 <5.4.15
+  https://github.com/advisories/GHSA-356w-63v5-8wf4 Vite has an `server.fs.deny` bypass with an invalid `request-target` | vulnerable: >=5.0.0 <5.4.18
+  https://github.com/advisories/GHSA-859w-5945-r5v3 Vite's server.fs.deny bypassed with /. for files under project root | vulnerable: >=5.0.0 <=5.4.18
+  https://github.com/advisories/GHSA-xcj6-pq6g-qj4x Vite allows server.fs.deny to be bypassed with .svg or relative paths | vulnerable: >=5.0.0 <5.4.17
+  https://github.com/advisories/GHSA-g4jq-h2w9-997c Vite middleware may serve files starting with the same name with the public directory | vulnerable: <=5.4.19
+  https://github.com/advisories/GHSA-jqfw-vq24-v9c3 Vite's `server.fs` settings were not applied to HTML files | vulnerable: <=5.4.19
+  https://github.com/advisories/GHSA-93m4-6634-74q7 vite allows server.fs.deny bypass via backslash on Windows | vulnerable: >=5.2.6 <=5.4.20
+  https://github.com/advisories/GHSA-4r4m-qw57-chr8 Vite has a `server.fs.deny` bypassed for `inline` and `raw` with `?import` query | vulnerable: >=5.0.0 <5.4.16
+  https://github.com/advisories/GHSA-4w7w-66w2-5vf9 Vite Vulnerable to Path Traversal in Optimized Deps `.map` Handling | vulnerable: <=6.4.1
+  https://github.com/advisories/GHSA-c27g-q93r-2cwf launch-editor vulnerable to command injection via the crafted request on Windows | vulnerable: <=5.4.8
+  https://github.com/advisories/GHSA-v6wh-96g9-6wx3 launch-editor: NTLMv2 hash disclosure via UNC path handling on Windows | vulnerable: <=6.4.2
+  https://github.com/advisories/GHSA-698v-4r3x-3vcv launch-editor: escapeCmdArgs() omits % escaping on Windows | vulnerable: <=6.4.3
+  https://github.com/advisories/GHSA-r825-w8mm-5pxw launch-editor: Editor CLI flag misinterpretation causing arbitrary command execution for some editors | vulnerable: <=6.4.3
+  https://github.com/advisories/GHSA-587h-7wmj-h5pm launch-editor: `fs.existsSync()` existence check can be bypassed on Windows | vulnerable: <=6.4.3
+  https://github.com/advisories/GHSA-9jrq-w75r-8gcw Vite: Cross origin script execution through Vite custom middleware | vulnerable: <=6.4.3
+  https://github.com/advisories/GHSA-rq7h-c2jc-7f22 Vite: Files outside `server.fs.allow` could be served when project paths match system paths on non-Windows machine | vulnerable: <=6.4.3
+  https://github.com/advisories/GHSA-fx2h-pf6j-xcff vite: `server.fs.deny` bypass on Windows alternate paths | vulnerable: <=6.4.2
+$ npm view vite@5 version | tail -3
+vite@5.4.19 '5.4.19'
+vite@5.4.20 '5.4.20'
+vite@5.4.21 '5.4.21'
+$ npm audit fix --dry-run --json | changed packages
+dry-run added/removed/changed: 6 14 47
+
+## R-AI-07: dev server bind address (default)
+$ grep -n "host" vite.config.ts package.json
+[exit code: 1]  (1 = not set: Vite default binds localhost only)
+$ npm ls eslint-plugin-react-hooks --depth=0
+└── eslint-plugin-react-hooks@5.1.0-rc-fb9a90fa48-20240614
