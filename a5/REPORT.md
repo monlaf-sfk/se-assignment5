@@ -1,13 +1,30 @@
-# Assignment #05: agent readiness and risk governance
+# Agent Readiness and Risk Governance of a Small React Application
 
-Student: Kerimzhanov Rassul · Course: Software Engineering · Date: 2026-11-18
+Kerimzhanov Rassul · Software Engineering, Assignment #05 · 18 November 2026
 
-AI assistant: Claude Code (Claude Opus 5.5, Anthropic), plus one read-only sub-agent for the risk
-review. Firefox DevTools MCP was used for browser checks and screenshots.
+## Abstract
 
-Repository: https://github.com/monlaf-sfk/se-assignment5 (public). It is a clone of my Assignment 4
+This report audits a small React and TypeScript application, the Smart Campus Room Availability
+Checker, for safe use with AI coding agents. Starting from a preserved baseline (40 passing tests),
+it adds repository instructions for agents, applies one justified refactoring, and runs a read-only
+AI risk review whose 10 candidate findings were each verified independently. Eleven risks were
+registered and scored; the two highest confirmed risks were mitigated and verified with failing-first
+tests and a blocked-commit test. The final version passes all quality gates (49 of 49 tests) and
+reaches agent-readiness Level 2 (Documented). The release decision is CONDITIONAL because
+development-tool advisories and two minor issues remain under named controls.
+
+Keywords: AI coding agents, AGENTS.md, risk register, agent readiness, verification.
+
+## 1. Introduction and scope (scenario)
+
+The code is public at https://github.com/monlaf-sfk/se-assignment5. It is a clone of my Assignment 4
 project, the Smart Campus Room Availability Checker (React 18, TypeScript, Vite 5, Vitest 1). The
 app is small and uses only fictional data. It has no secrets and no personal data.
+
+The AI assistant was Claude Code (Claude Opus 5.5, Anthropic), with one read-only sub-agent for the risk
+review; Firefox DevTools MCP was used for browser checks and screenshots.
+
+Table 1. Versions and commit references.
 
 | Version | Reference |
 |---|---|
@@ -22,7 +39,7 @@ Baseline tree: https://github.com/monlaf-sfk/se-assignment5/tree/a5-baseline · 
 
 `E:<file>` means a file in `a5/evidence/`. Screenshots are in `a5/evidence/screens/`.
 
-## 0. Starting point and acceptance criteria
+### 1.1 Starting point and acceptance criteria
 
 I chose this repository because it already has working code, 40 tests, lint, a type check and a
 build. It is small (788 non-test source lines), and I know its requirements from Assignments 3
@@ -36,7 +53,9 @@ Commands (from `app/`): `npm ci`, `npx vitest run`, `npm run typecheck`, `npm ru
 `npm run build`, `npm run dev`. Assignment 5 adds `npm run check` (all gates) and
 `scripts/run-checks.sh "<label>"` (an evidence run that prints exit codes).
 
-Acceptance criteria (`a5/ACCEPTANCE.md`). All five held at the baseline and still hold at the end.
+Table 2 lists the acceptance criteria (`a5/ACCEPTANCE.md`). All five held at the baseline and still hold at the end.
+
+Table 2. Acceptance criteria and final evidence.
 
 | ID | Criterion | Final evidence |
 |---|---|---|
@@ -46,9 +65,11 @@ Acceptance criteria (`a5/ACCEPTANCE.md`). All five held at the baseline and stil
 | AC-A5-4 | `npm ci`, typecheck, lint, tests, build all exit 0 and passing tests ≥ 40 | final run: all exit 0, 49 passed (49) |
 | AC-A5-5 | No runtime dependency vulnerabilities, no network calls, fictional data | `npm audit --omit=dev` → `found 0 vulnerabilities`; grep for `fetch(`, `XMLHttpRequest`, `axios`, `WebSocket` in `app/src` → no match (`E:08_risk_evidence.txt`) |
 
-## Task 1. Baseline and context
+## 2. Baseline and context (Task 1)
 
-### Repository map (baseline `cb0762a`, `E:02_repo_map.txt`)
+### 2.1 Repository map
+
+Table 3. Repository map at baseline `cb0762a` (`E:02_repo_map.txt`).
 
 | Part | Content |
 |---|---|
@@ -61,7 +82,9 @@ Acceptance criteria (`a5/ACCEPTANCE.md`). All five held at the baseline and stil
 | Build / tooling | Vite 5.4.8, TypeScript 5.6.3 (strict), ESLint 9 + typescript-eslint, Tailwind 3, Vitest 1.6.1; `package-lock.json` present |
 | Runtime deps | `react`, `react-dom` 18.3.1, `lucide-react` 0.446.0 |
 
-### Baseline checks (`E:01_baseline_checks.txt`, Node 26.13.0, npm 11.20.0, macOS arm64)
+### 2.2 Baseline checks
+
+Table 4. Baseline check results (`E:01_baseline_checks.txt`; Node 26.13.0, npm 11.20.0, macOS arm64).
 
 | Command | Result |
 |---|---|
@@ -73,7 +96,9 @@ Acceptance criteria (`a5/ACCEPTANCE.md`). All five held at the baseline and stil
 | `npm audit --omit=dev` | `found 0 vulnerabilities` |
 | `npm audit` (incl. dev) | 23 vulnerabilities (2 low, 6 moderate, 13 high, 2 critical), exit 1 |
 
-### Weaknesses at the baseline
+### 2.3 Weaknesses at the baseline
+
+Table 5. Weaknesses observed at the baseline.
 
 | # | Weakness | Evidence | Status |
 |---|---|---|---|
@@ -89,7 +114,7 @@ and are marked "plausible" in the risk register: whether the dev-dependency advi
 exploited here, how Chrome and Safari behave (I tested only Firefox), and whether "now" will ever be
 switched to a real clock.
 
-## Task 2. Agent instructions (`AGENTS.md`, `CLAUDE.md`)
+## 3. Agent instructions (Task 2)
 
 `AGENTS.md` is in the repository root. `CLAUDE.md` holds one line, `@AGENTS.md`, so Claude Code
 loads the same instructions automatically. Claude Code showed the file in its context right after I
@@ -121,9 +146,9 @@ What the file covers:
    - larger work goes on a branch or worktree, one per agent session;
    - after one failed attempt the agent stops and reports.
 
-Mitigation M2 (Task 7) fixed conflicting clauses that the AI review found in this file.
+Mitigation M2 (Section 8) fixed conflicting clauses that the AI review found in this file.
 
-## Task 3. Pattern decision
+## 4. Focused pattern decision (Task 3)
 
 The problem (`E:03_pattern_before.txt`): `App.tsx` checked "is the selected room still usable" in
 two places, line 36 (`matches.find((m) => m.selectable && m.room.id === roomId)`) and line 46
@@ -131,6 +156,8 @@ two places, line 36 (`matches.find((m) => m.selectable && m.room.id === roomId)`
 (`parseAttendees` + `filterRooms`) was also written twice (lines 25/29 and 44/45). Business logic sat
 inside the UI component. If one copy changed and the other did not, the room on screen and the room
 being checked could differ, which is the F5 bug fixed in Assignment 4.
+
+Table 6. Patterns evaluated.
 
 | Option | Decision | Reason |
 |---|---|---|
@@ -150,13 +177,15 @@ The criteria still hold:
   `FAIL selection.test.ts > blocked room is never returned (F3)`, `Tests 1 failed | 45 passed`. The
   new tests guard the rule. I then reverted the change.
 
-## Task 4. Read-only AI risk review
+## 5. Read-only AI risk review (Task 4)
 
 A Claude Code "Explore" sub-agent did the review. It had no edit or write tools, its prompt
 forbade changes, installs and builds, and it did not see my own findings. The prompt and output are
 in `E:11_ai_risk_review.md`. It proposed 10 candidates, and I checked each one myself (`E:05`, `E:07`,
 `E:08`, `E:12_verify_ai_claims.txt`). Claims that needed modified code I tested in a separate
 detached worktree, so the main tree stayed clean.
+
+Table 7. AI-proposed candidates and their verification.
 
 | AI ID | Category | Candidate | My verification | Classification |
 |---|---|---|---|---|
@@ -181,10 +210,12 @@ In total: 10 AI candidates plus 2 of my own checks. 9 are confirmed, 2 plausible
 1 suggested fix are unsupported. They span 5 categories: correctness, maintainability, security,
 dependency and agent operations.
 
-## Task 5. Risk register
+## 6. Risk register (Task 5)
 
 L = likelihood, I = impact, both 1–3; score = L × I. Scores are for the baseline. The "After"
-column comes from Task 7.
+column comes from Section 8.
+
+Table 8. Risk register.
 
 | ID | Cat. | Cause → event → consequence | Component | Evidence | L | I | Score | Mitigation | Owner | Verification plan | After | Residual risk |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|
@@ -203,9 +234,11 @@ column comes from Task 7.
 Top two confirmed risks for corrective action: R-01 (6) and R-03 (6). R-02 also scores 6, and the
 same change fixes it, so M1 covers R-01 and R-02. R-04 and R-05 (score 4) need a dependency upgrade.
 AGENTS.md requires human approval for that, so the upgrade is designed as the background task in
-Task 8.
+Section 9.
 
-## Task 6. Agent-readiness audit
+## 7. Agent-readiness audit (Task 6)
+
+Table 9. Agent-readiness audit, baseline versus final.
 
 | Area | Baseline (`cb0762a`) | Final (`main`) | Evidence |
 |---|---|---|---|
@@ -237,12 +270,12 @@ Missing evidence for Level 3 (Agent-ready):
 3. No automated browser e2e test (Playwright). Browser checks were manual and Firefox-only.
 4. Open defect R-06 (midnight) and type-safety gap R-07.
 
-## Task 7. Mitigation and verification
+## 8. Mitigation and verification (Task 7)
 
 Both mitigations were made on branch `a5/mitigations`. Claude Code proposed each diff, I reviewed
 it, and the branch was merged with `--no-ff` (`54f4967`).
 
-### M1. Linked labels and visible validation (R-01, R-02), commit `b66ba57`
+### 8.1 M1: linked labels and visible validation (R-01, R-02), commit `b66ba57`
 
 - Tests first: 3 new RTL tests failed before the fix, `Tests 3 failed | 46 passed (49)` (`E:09_M1_red.txt`).
 - The change (full patch in `E:10b_M1_diff.patch`):
@@ -255,7 +288,7 @@ it, and the branch was merged with `--no-ff` (`54f4967`).
 - After the fix: `npm run check` exits 0, 49 passed (49) (`E:10_M1_green.txt`).
 - Browser check (Firefox 158): the inputs' `labels` are `["Start time","End time"]`,
   `aria-invalid="true"`, and the described-by text is "Enter a valid start time (HH:MM).". At
-  375 px, `scrollWidth` = `clientWidth` = 375, so nothing overflows. Screenshots:
+  375 px, `scrollWidth` = `clientWidth` = 375, so nothing overflows. Figures 1 to 3 show the screenshots:
   `S4_baseline_invalid_time_375px.png` (before), `S3_M1_invalid_time_375px.png` and
   `S2_M1_invalid_time_desktop.png` (after).
 - One artifact: when my script fired an `input` event and a click in the same tick, the first
@@ -264,7 +297,7 @@ it, and the branch was merged with `--no-ff` (`54f4967`).
 
 <!--FIGURES-->
 
-### M2. Enforced gate and consistent agent rules (R-03, R-08, R-10, partial R-04), commit `1af25cc`
+### 8.2 M2: enforced gate and consistent agent rules (R-03, R-08, R-10, partial R-04), commit `1af25cc`
 
 What changed:
 
@@ -284,7 +317,9 @@ Verification (`E:13_M2_gate_verification.txt`):
   `FAIL ... T10`, `Tests 3 failed | 46 passed (49)` and `pre-commit: BLOCKED`, exited 1, and HEAD did
   not move. I then reverted the mutation.
 
-### Before and after
+### 8.3 Before and after
+
+Table 10. Check results across versions.
 
 | Run | Commit | Test files | Tests | typecheck | lint | build | prod audit | full audit |
 |---|---|---|---|---|---|---|---|---|
@@ -308,12 +343,14 @@ Trade-offs:
 - The old tests still use `getByDisplayValue`. I left them byte-identical because they are the
   proof of the acceptance criteria.
 
-## Task 8. Background agent safeguards (hypothetical)
+## 9. Background agent safeguards (Task 8)
 
 The task: upgrade the toolchain to close R-04 and R-05. That means Vite 5 → 6.4.4+ (or the current
 major), Vitest 1 → current, and `eslint-plugin-react-hooks` RC → stable, while all 49 tests and
 AC-A5-1..5 stay green. The work is mechanical and slow, and its result is easy to verify, so an
 asynchronous agent suits it.
+
+Table 11. Safeguards for the hypothetical background task.
 
 | Safeguard | Definition |
 |---|---|
@@ -327,7 +364,7 @@ asynchronous agent suits it.
 | Failure handling | If the gates still fail after 3 attempts, the agent stops, commits nothing to `main`, and leaves a `FAILED.md` on the branch with the command and the exact error line. |
 | Rollback | The branch is never fast-forwarded. If a problem appears after the merge: `git revert -m 1 <merge>`, then `npm ci` from the restored lockfile, then `scripts/run-checks.sh`. The `a5-baseline` tag and a pre-merge tag stay available. |
 
-## Task 9. Release decision: CONDITIONAL
+## 10. Release decision (Task 9): CONDITIONAL
 
 For release:
 
@@ -340,9 +377,11 @@ For release:
 
 Not GO, because four limitations remain. Each has a control and an owner:
 
+Table 12. Release conditions, controls and owners.
+
 | Condition | Control | Owner | Due |
 |---|---|---|---|
-| R-04/R-05 dev-tool advisories (2 critical, 13 high) | Never run the dev server with `--host`; stop it after use; no Vitest UI. Run the Task 8 upgrade on a branch with human review. | Rassul K. | before any real deployment |
+| R-04/R-05 dev-tool advisories (2 critical, 13 high) | Never run the dev server with `--host`; stop it after use; no Vitest UI. Run the Section 9 upgrade on a branch with human review. | Rassul K. | before any real deployment |
 | R-06 end time 24:00 not enterable | Documented limitation; any time from 00:00 to 23:59 works. Needs a product decision. | Rassul K. | next iteration |
 | R-07 untyped equipment | No edits to `data.ts` without a reviewer until the `Equipment` type exists | Rassul K. | next iteration |
 | Gate is local only | Every clone runs `git config core.hooksPath .githooks`; add CI to the GitHub repository | Rassul K. | next iteration |
@@ -350,7 +389,7 @@ Not GO, because four limitations remain. Each has a control and an owner:
 Not NO-GO, because no serious risk affects the shipped app: the open advisories are in development
 tools only, and the data is fictional. Every gate ran and passed, so no critical check is missing.
 
-## Task 10. AI reflection (251 words)
+## 11. AI reflection (Task 10, 251 words)
 
 I used Claude Code with Claude Opus 5.5. It worked inside my repository with the source, git
 history and command output. CLAUDE.md imports AGENTS.md, so the instructions loaded automatically.
@@ -376,7 +415,17 @@ The repository instructions helped: they kept dependency changes out of scope an
 rules to audit. Next time I would create the branch and the hook before the first change, add CI and
 a Playwright test, and keep probes in worktrees from the start.
 
-## AI-use record and evidence appendix
+## References
+
+1. Lesson #09 lecture: Customizing Your Agent and Repository.
+2. Lesson #09 practice: Apply a small number of useful patterns; AGENTS.md and verification.
+3. Lesson #10 lecture: Agent-Ready Codebases and Background Coding Agent Workflows.
+4. Lesson #10 practice: Review AI-assisted software for risks.
+5. GitHub Advisory Database, advisories cited in Section 5 (for example GHSA-vg6x-rcgg-rjx6, GHSA-5gmw-xhrv-c9v3), accessed 18 November 2026 through `npm audit`.
+
+## Appendix A. AI-use record and evidence
+
+Table 13. AI-use record.
 
 | # | Tool, date | Prompt summary | Output used | Problems found in the output | Changes I made | Verification source |
 |---|---|---|---|---|---|---|

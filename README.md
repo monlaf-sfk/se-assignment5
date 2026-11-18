@@ -77,7 +77,7 @@ npx vitest run    # expected: 34 passed (34)
 
 | What | Where |
 |---|---|
-| Report (PDF / source) | `a5/A5_Kerimzhanov_Rassul_Report.pdf`, `a5/REPORT.md` (rendered to `a5/report.html` by `scripts/md2html.py`) |
+| Report (PDF / source) | `a5/A5_Kerimzhanov_Rassul_Report.pdf`, `a5/REPORT.md` (rendered to `a5/report.html` with `python3 scripts/md2html.py a5/REPORT.md scripts/academic.css "<title>" a5/report.html a5/figures.html`) |
 | Agent instructions | `AGENTS.md` (imported by `CLAUDE.md`) |
 | Acceptance criteria | `a5/ACCEPTANCE.md` |
 | Evidence (command output, AI review, screenshots) | `a5/evidence/` |

@@ -129,6 +129,11 @@ if __name__ == "__main__":
     body = convert(open(src, encoding="utf-8").read())
     if extra:
         body = body.replace("<p>&lt;!--FIGURES--&gt;</p>", open(extra, encoding="utf-8").read())
+    # "Table N. text" paragraph right before a table becomes its <caption>
+    body = re.sub(r'<p>(Table \d+\.)(.*?)</p>\n(<div class="land">)?<table>',
+                  lambda m: (m.group(3) or "") + "<table><caption><b>" + m.group(1) + "</b>" + m.group(2) + "</caption>", body)
+    # Abstract block
+    body = re.sub(r'(<h2>Abstract</h2>.*?)(?=<h2>)', r'<div class="abstract">\1</div>', body, count=1, flags=re.S)
     style = open(css, encoding="utf-8").read()
-    doc = f'<!doctype html><html lang="en"><head><meta charset="utf-8"><title>{html.escape(title)}</title>{style}<style>blockquote{{color:#5b6675;border-left:3px solid #d5dbe3;margin:6pt 0;padding:2pt 8pt;font-size:9.5pt}} table{{font-size:8.6pt}} td,th{{padding:3pt 4pt}} @page land{{size:A4 landscape;margin:12mm}} .land{{page:land}} .land table{{font-size:7.4pt;table-layout:auto}} .land code{{font-size:6.8pt;word-break:break-all}} .land td{{padding:2pt 3pt}} hr{{border:0;border-top:1px solid #d5dbe3;margin:10pt 0}}</style></head><body>{body}</body></html>'
+    doc = f'<!doctype html><html lang="en"><head><meta charset="utf-8"><title>{html.escape(title)}</title>{style}</head><body>{body}</body></html>'
     open(dst, "w", encoding="utf-8").write(doc)
