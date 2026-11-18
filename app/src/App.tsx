@@ -47,8 +47,8 @@ function App() {
   const startMin = hhmmToMinutes(startTime);
   const endMin = hhmmToMinutes(endTime);
 
-  const startError = startMin === null ? 'Invalid time' : undefined;
-  const endError = endMin === null ? 'Invalid time' : undefined;
+  const startError = startMin === null ? 'Enter a valid start time (HH:MM).' : undefined;
+  const endError = endMin === null ? 'Enter a valid end time (HH:MM).' : undefined;
 
   const duration = durationOf(startMin, endMin);
 
@@ -68,8 +68,12 @@ function App() {
   };
 
   const handleCheck = () => {
-    if (!room || startMin === null || endMin === null) {
-      setResult({ available: false, reason: 'Please select a room and valid times.' });
+    if (!room) {
+      setResult({ available: false, reason: 'Select a room first.' });
+      return;
+    }
+    if (startMin === null || endMin === null) {
+      setResult({ available: false, reason: 'Enter a valid start and end time.' });
       return;
     }
     setResult(checkAvailability({ room, start: startMin, end: endMin, currentTime }));

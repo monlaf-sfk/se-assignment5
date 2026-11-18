@@ -74,3 +74,33 @@ describe('App — filter → select → check → switch room', () => {
     expect(screen.getByText(PLACEHOLDER)).toBeTruthy();
   });
 });
+
+describe('A5 mitigation M1 — time inputs are labelled and explain invalid values', () => {
+  test('start and end inputs are reachable by their visible labels', () => {
+    render(<App />);
+    expect((screen.getByLabelText('Start time') as HTMLInputElement).value).toBe('11:00');
+    expect((screen.getByLabelText('End time') as HTMLInputElement).value).toBe('12:00');
+  });
+
+  test('a cleared time shows a visible, linked error and Check names the real problem', async () => {
+    const user = userEvent.setup();
+    render(<App />);
+    const start = screen.getByLabelText('Start time');
+    fireEvent.change(start, { target: { value: '' } });
+
+    const message = screen.getByText('Enter a valid start time (HH:MM).');
+    expect(start.getAttribute('aria-invalid')).toBe('true');
+    expect(start.getAttribute('aria-describedby')).toBe(message.id);
+
+    await user.click(screen.getByRole('button', { name: 'Check' }));
+    expect(screen.getByText('Enter a valid start and end time.')).toBeTruthy();
+  });
+
+  test('no room selected: Check asks for a room, not for times', async () => {
+    const user = userEvent.setup();
+    render(<App />);
+    await user.click(screen.getByRole('checkbox', { name: 'projector' })); // hides selected Library 201
+    await user.click(screen.getByRole('button', { name: 'Check' }));
+    expect(screen.getByText('Select a room first.')).toBeTruthy();
+  });
+});
