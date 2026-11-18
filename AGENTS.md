@@ -59,7 +59,7 @@ on a branch or worktree and needs human approval before merge (section 7).
 
 Dev server: `npm run dev` binds to localhost only. Never pass `--host`. Stop it when the check is
 done, and prefer `npm run build && npm run preview` for browser checks: the pinned Vite 5.4.8 dev
-server has open advisories (see `a5/REPORT.md`, risk R-07).
+server has open advisories (see `a5/REPORT.md`, risk R-04).
 
 One-time setup per clone: `git config core.hooksPath .githooks` enables the pre-commit gate,
 which runs `npm run check` whenever `app/` is staged. Never bypass it with `--no-verify`.

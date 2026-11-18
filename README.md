@@ -72,3 +72,21 @@ npx vitest run    # expected: 34 passed (34)
 | 3 Refactoring | `docs/architecture.md`, `evidence/05_*`, `06_*`, `07_*`, `E13_decision.md` |
 | 4 Tests | `evidence/08_E14_final_tests.txt`, `09_E14_mutation_check.txt`, `10_E14_original_tests_on_final.txt`, `E14_test_consolidation.md` |
 | 5 Quality | report, section "Quality evaluation" |
+
+## Assignment #05 (agent readiness and risk governance)
+
+| What | Where |
+|---|---|
+| Report (PDF / source) | `a5/A5_Kerimzhanov_Rassul_Report.pdf`, `a5/REPORT.md` (rendered to `a5/report.html` by `scripts/md2html.py`) |
+| Agent instructions | `AGENTS.md` (imported by `CLAUDE.md`) |
+| Acceptance criteria | `a5/ACCEPTANCE.md` |
+| Evidence (command output, AI review, screenshots) | `a5/evidence/` |
+| Baseline / final | tag `a5-baseline` (= `cb0762a`) / `main` |
+
+One-time setup after cloning, so the pre-commit quality gate runs:
+
+```bash
+git config core.hooksPath .githooks
+```
+
+Run all gates with evidence output: `scripts/run-checks.sh "<label>"` (from the repository root).
