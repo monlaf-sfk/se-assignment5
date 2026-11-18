@@ -1,0 +1,108 @@
+# Baseline checks (a5-baseline = cb0762a) — commit cb0762a — 2026-11-18 18:16 +05
+# node v26.13.0, npm 11.20.0, Darwin arm64
+
+$ npm ci --no-audit --no-fund
+npm warn deprecated whatwg-encoding@3.1.1: Use @exodus/bytes instead for a more spec-conformant and faster implementation
+
+added 405 packages in 2s
+npm warn install-scripts 2 packages have install scripts not yet covered by allowScripts:
+npm warn install-scripts   esbuild@0.21.5 (postinstall: node install.js)
+npm warn install-scripts   fsevents@2.3.3 (install: (install scripts present))
+npm warn install-scripts
+npm warn install-scripts Run `npm install-scripts ls` to review, or `npm install-scripts approve <pkg>` to allow.
+[exit code: 0]
+
+$ npx vitest run
+
+ RUN  v1.6.1 /Users/rasulkerimzhanov/Projects/university/software_e/assignment5/app
+
+ ✓ src/lib/filtering.test.ts  (11 tests) 2ms
+ ✓ src/lib/roomSelection.test.ts  (2 tests) 1ms
+ ✓ src/lib/availability.test.ts  (24 tests) 2ms
+ ✓ src/App.test.tsx  (3 tests) 265ms
+
+ Test Files  4 passed (4)
+      Tests  40 passed (40)
+   Start at  18:16:38
+   Duration  599ms (transform 59ms, setup 0ms, collect 153ms, tests 270ms, environment 117ms, prepare 97ms)
+[exit code: 0]
+
+$ npm run typecheck
+
+> vite-react-typescript-starter@0.0.0 typecheck
+> tsc --noEmit -p tsconfig.app.json
+[exit code: 0]
+
+$ npm run lint
+
+> vite-react-typescript-starter@0.0.0 lint
+> eslint .
+[exit code: 0]
+
+$ npm run build
+
+> vite-react-typescript-starter@0.0.0 build
+> vite build
+
+vite v5.4.8 building for production...
+transforming...
+Browserslist: caniuse-lite is outdated. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+✓ 1578 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                   0.71 kB │ gzip:  0.39 kB
+dist/assets/index-BJmfksjr.css   17.58 kB │ gzip:  4.04 kB
+dist/assets/index-CM79Y_JZ.js   163.93 kB │ gzip: 51.92 kB
+✓ built in 638ms
+[exit code: 0]
+
+$ npm audit --omit=dev
+found 0 vulnerabilities
+[exit code: 0]
+
+$ npm audit
+node_modules/postcss-selector-parser
+
+rollup  4.0.0 - 4.58.0
+Severity: high
+Rollup 4 has Arbitrary File Write via Path Traversal - https://github.com/advisories/GHSA-mw96-cpmx-2vgc
+fix available via `npm audit fix`
+node_modules/rollup
+
+source-map-js  1.0.0 - 1.2.1
+Severity: high
+source-map-js allows event-loop denial of service through indexed source-map section offsets - https://github.com/advisories/GHSA-68fv-2mgg-jv7q
+fix available via `npm audit fix`
+node_modules/source-map-js
+
+tinypool  <=2.1.1
+Severity: critical
+Tinypool: Prototype Pollution gadget in worker options leads to Remote Code Execution - https://github.com/advisories/GHSA-5gmw-xhrv-c9v3
+Tinypool: Prototype Pollution Gadget to RCE in run() options - https://github.com/advisories/GHSA-85c8-ppgw-ccpr
+fix available via `npm audit fix --force`
+Will install vitest@5.1.1, which is a breaking change
+node_modules/tinypool
+  vitest  <=4.0.0-beta.19
+  Depends on vulnerable versions of tinypool
+  node_modules/vitest
+
+
+
+yaml  2.0.0 - 2.8.2
+Severity: moderate
+yaml is vulnerable to Stack Overflow via deeply nested YAML collections - https://github.com/advisories/GHSA-48c2-rrv3-qjmp
+fix available via `npm audit fix`
+node_modules/yaml
+
+23 vulnerabilities (2 low, 6 moderate, 13 high, 2 critical)
+
+To address issues that do not require attention, run:
+  npm audit fix
+
+To address all issues (including breaking changes), run:
+  npm audit fix --force
+[exit code: 1]
+
+# gates (ci, test, typecheck, lint, build): PASS

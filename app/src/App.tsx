@@ -3,7 +3,8 @@ import { Building2, Clock3, RotateCcw } from 'lucide-react';
 import { EQUIPMENT_OPTIONS, SAMPLE_ROOMS } from '@/data';
 import type { AvailabilityResult } from '@/types';
 import { checkAvailability, exceedsMaxDuration } from '@/lib/availability';
-import { filterRooms, hasSelectableRoom, parseAttendees } from '@/lib/filtering';
+import { hasSelectableRoom, parseAttendees } from '@/lib/filtering';
+import { findSelectableRoom, matchRooms } from '@/lib/selection';
 import { RoomFilters } from '@/components/RoomFilters';
 import { EmptyState } from '@/components/EmptyState';
 import { durationOf, hhmmToMinutes, MAX_BOOKING_MINUTES, minutesToHHMM } from '@/lib/time';
@@ -25,25 +26,17 @@ function App() {
   const attendeesCount = parseAttendees(attendees);
   const attendeesError = attendeesCount === null ? 'Enter a whole number of 1 or more.' : undefined;
 
-  const matches = useMemo(
-    () => (attendeesCount === null ? [] : filterRooms(SAMPLE_ROOMS, attendeesCount, equipment)),
-    [attendeesCount, equipment],
-  );
+  const matches = useMemo(() => matchRooms(SAMPLE_ROOMS, attendees, equipment), [attendees, equipment]);
   const showEmptyState = !hasSelectableRoom(matches);
 
   // Only a room that is visible AND selectable can be the subject of a check (F3, F5).
-  const room = useMemo(
-    () => matches.find((m) => m.selectable && m.room.id === roomId)?.room ?? null,
-    [matches, roomId],
-  );
+  const room = useMemo(() => findSelectableRoom(matches, roomId), [matches, roomId]);
 
   // F5: when filters hide (or block) the selected room, drop the selection and its result.
   const applyFilters = (nextAttendees: string, nextEquipment: string[]) => {
     setAttendees(nextAttendees);
     setEquipment(nextEquipment);
-    const count = parseAttendees(nextAttendees);
-    const nextMatches = count === null ? [] : filterRooms(SAMPLE_ROOMS, count, nextEquipment);
-    if (!nextMatches.some((m) => m.selectable && m.room.id === roomId)) {
+    if (findSelectableRoom(matchRooms(SAMPLE_ROOMS, nextAttendees, nextEquipment), roomId) === null) {
       setRoomId(null);
       setResult(null);
     }

@@ -1,0 +1,59 @@
+# Pattern decision — AFTER refactor
+
+$ grep -n "m.selectable && m.room.id === roomId" app/src/App.tsx app/src/lib/*.ts
+app/src/lib/selection.ts:19:  return matches.find((m) => m.selectable && m.room.id === roomId)?.room ?? null;
+
+$ grep -n "filterRooms(\|matchRooms(\|findSelectableRoom(" app/src/App.tsx
+29:  const matches = useMemo(() => matchRooms(SAMPLE_ROOMS, attendees, equipment), [attendees, equipment]);
+33:  const room = useMemo(() => findSelectableRoom(matches, roomId), [matches, roomId]);
+39:    if (findSelectableRoom(matchRooms(SAMPLE_ROOMS, nextAttendees, nextEquipment), roomId) === null) {
+
+$ grep -c "" app/src/App.tsx
+213
+
+$ git diff --stat
+ AGENTS.md       |  1 +
+ app/src/App.tsx | 17 +++++------------
+ 2 files changed, 6 insertions(+), 12 deletions(-)
+
+$ cd app && npm run check
+> vite-react-typescript-starter@0.0.0 check
+> npm run typecheck && npm run lint && vitest run && npm run build
+> vite-react-typescript-starter@0.0.0 typecheck
+> tsc --noEmit -p tsconfig.app.json
+> vite-react-typescript-starter@0.0.0 lint
+> eslint .
+ RUN  v1.6.1 /Users/rasulkerimzhanov/Projects/university/software_e/assignment5/app
+ ✓ src/lib/selection.test.ts  (6 tests) 1ms
+ ✓ src/lib/availability.test.ts  (24 tests) 3ms
+ ✓ src/lib/filtering.test.ts  (11 tests) 2ms
+ ✓ src/lib/roomSelection.test.ts  (2 tests) 1ms
+ ✓ src/App.test.tsx  (3 tests) 253ms
+ Test Files  5 passed (5)
+      Tests  46 passed (46)
+   Start at  18:18:25
+   Duration  715ms (transform 60ms, setup 0ms, collect 197ms, tests 260ms, environment 203ms, prepare 126ms)
+> vite-react-typescript-starter@0.0.0 build
+> vite build
+vite v5.4.8 building for production...
+transforming...
+✓ 1579 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                   0.71 kB │ gzip:  0.39 kB
+dist/assets/index-BJmfksjr.css   17.58 kB │ gzip:  4.04 kB
+dist/assets/index-BAO3ybvy.js   163.96 kB │ gzip: 51.92 kB
+✓ built in 644ms
+[exit code: 0]
+
+# Mutation check: make findSelectableRoom ignore 'selectable' (blocked room becomes selectable)
+19:  return matches.find((m) => m.room.id === roomId)?.room ?? null;
+ ✓ src/lib/filtering.test.ts  (11 tests) 2ms
+ ✓ src/lib/roomSelection.test.ts  (2 tests) 1ms
+ ✓ src/lib/availability.test.ts  (24 tests) 3ms
+ ✓ src/App.test.tsx  (3 tests) 250ms
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+ FAIL  src/lib/selection.test.ts > findSelectableRoom > blocked room is never returned (F3)
+AssertionError: expected { id: 'sci-340', …(7) } to be null
+      Tests  1 failed | 45 passed (46)
+(mutation reverted by hand; file is untracked so git checkout did not apply)

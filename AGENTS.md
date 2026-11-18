@@ -23,6 +23,7 @@ app/src/
     time.ts           HH:MM <-> minutes, durationOf, MAX_BOOKING_MINUTES, day window
     availability.ts   checkAvailability(): ordered rules -> AvailabilityResult
     filtering.ts      filterRooms(), parseAttendees(), hasSelectableRoom()
+    selection.ts      matchRooms(), findSelectableRoom(): which room stays selectable
   components/         presentational components; receive props, own no business rules
 ```
 

@@ -1,0 +1,22 @@
+# Pattern decision — duplication BEFORE refactor (commit 6a721e1)
+
+$ grep -n "m.selectable && m.room.id === roomId" app/src/App.tsx
+36:    () => matches.find((m) => m.selectable && m.room.id === roomId)?.room ?? null,
+46:    if (!nextMatches.some((m) => m.selectable && m.room.id === roomId)) {
+
+$ grep -n "filterRooms(SAMPLE_ROOMS\|parseAttendees(" app/src/App.tsx
+25:  const attendeesCount = parseAttendees(attendees);
+29:    () => (attendeesCount === null ? [] : filterRooms(SAMPLE_ROOMS, attendeesCount, equipment)),
+44:    const count = parseAttendees(nextAttendees);
+45:    const nextMatches = count === null ? [] : filterRooms(SAMPLE_ROOMS, count, nextEquipment);
+
+$ grep -c "" app/src/App.tsx  (lines)
+220
+
+$ grep -n "^\s*if (" app/src/lib/availability.ts  (rule chain evaluated for Strategy)
+17:  if (start < MIN_DAY || end > MAX_DAY) {
+22:  if (duration === null) {
+26:  if (start <= currentTime) {
+33:  if (exceedsMaxDuration(duration)) {
+40:  if (room.blocked) {
+51:    if (overlaps) {
