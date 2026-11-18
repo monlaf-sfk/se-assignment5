@@ -1,0 +1,45 @@
+# Probe of TimeInput (temporary test file src/zz_probe.test.tsx, deleted after run)
+
+// @vitest-environment jsdom
+// TEMPORARY probe for risk review (deleted after run, not committed).
+import { afterEach, expect, test } from 'vitest';
+import { cleanup, fireEvent, render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import App from './App';
+afterEach(cleanup);
+
+test('probe A: time inputs reachable by their visible label', () => {
+  render(<App />);
+  expect(() => screen.getByLabelText('Start time')).not.toThrow();
+});
+
+test('probe B: invalid (cleared) start time shows a visible message', () => {
+  render(<App />);
+  fireEvent.change(screen.getByDisplayValue('11:00'), { target: { value: '' } });
+  expect(screen.queryByText('Invalid time')).not.toBeNull();
+});
+
+test('probe C: Check with cleared start time — what does the user see?', async () => {
+  render(<App />);
+  fireEvent.change(screen.getByDisplayValue('11:00'), { target: { value: '' } });
+  await userEvent.setup().click(screen.getByRole('button', { name: 'Check' }));
+  console.log('PROBE C banner:', screen.getByText(/Please select|valid/).textContent);
+});
+
+$ npx vitest run src/zz_probe.test.tsx
+PROBE C banner: Please select a room and valid times.
+     → expected [Function] to not throw an error but 'TestingLibraryElementError: Found a l…' was thrown
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+ FAIL  src/zz_probe.test.tsx > probe A: time inputs reachable by their visible label
+AssertionError: expected [Function] to not throw an error but 'TestingLibraryElementError: Found a l…' was thrown
+"TestingLibraryElementError: Found a label with the text of: Start time, however no form control was found associated to that label. Make sure you're using the \"for\" attribute or \"aria-labelledby\" attribute correctly.
+ FAIL  src/zz_probe.test.tsx > probe B: invalid (cleared) start time shows a visible message
+AssertionError: expected null not to be null
+      Tests  2 failed | 1 passed (3)
+
+$ grep -n "error\|<label\|<input" src/components/TimeInput.tsx
+5:  error?: string;
+8:export function TimeInput({ label, value, onChange, error }: Props) {
+11:      <label className="mb-1 block text-xs font-medium text-slate-600">{label}</label>
+12:      <input
+19:          error ? 'border-red-300' : 'border-slate-200',

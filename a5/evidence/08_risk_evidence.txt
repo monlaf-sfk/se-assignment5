@@ -1,0 +1,34 @@
+# Additional risk evidence — commit a817034
+
+$ grep -rnE "fetch\(|XMLHttpRequest|axios|WebSocket" app/src
+[exit code: 1]  (1 = no matches)
+
+$ cd app && npm audit --omit=dev
+found 0 vulnerabilities
+
+$ cd app && npm audit --json | jq ".metadata.vulnerabilities"
+{"info": 0, "low": 2, "moderate": 6, "high": 13, "critical": 2, "total": 23}
+direct packages flagged: ['postcss', 'vite', 'vitest']
+
+$ cd app && npm ls vitest tinypool rollup
+vite-react-typescript-starter@0.0.0 /Users/rasulkerimzhanov/Projects/university/software_e/assignment5/app
+├─┬ vite@5.4.8
+│ └── rollup@4.24.0
+└─┬ vitest@1.6.1
+  └── tinypool@0.8.4
+
+
+$ grep -c "tinypool\|rollup" app/dist/assets/*.js  (are dev tools in shipped bundle?)
+0
+
+$ ls .github .gitlab-ci.yml .husky 2>&1
+MISSING: .github
+MISSING: .gitlab-ci.yml
+MISSING: .husky
+
+$ grep -n "Node" README.md
+23:- Node.js 18 or newer (tested with Node 26.10.0, npm 11.19.1)
+
+$ grep -n "\"name\"\|\"version\"" app/package.json
+2:  "name": "vite-react-typescript-starter",
+4:  "version": "0.0.0",

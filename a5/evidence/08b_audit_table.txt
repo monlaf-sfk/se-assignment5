@@ -1,0 +1,23 @@
+@babel/core                low       fix=True | @babel/core: Arbitrary File Read via sourceMappingURL Comment
+@babel/helpers             moderate  fix=True | Babel has inefficient RegExp complexity in generated code with .replace when transpiling named capturing groups
+@eslint/plugin-kit         low       fix=True | Regular Expression Denial of Service (ReDoS) in @eslint/plugin-kit; @eslint/plugin-kit is vulnerable to Regular Expression Denial of Service
+@humanfs/node              moderate  fix=True | humanfs: Recursive copy follows symlinked files and copies data from outside the source tree
+ajv                        moderate  fix=True | ajv has ReDoS when using `$data` option
+brace-expansion            high      fix=True | brace-expansion Regular Expression Denial of Service vulnerability; brace-expansion Regular Expression Denial of Service vulnerability; brac
+browserslist               high      fix=True | Browserslist: Unbounded memory growth (no cache eviction) via distinct query results, leading to eventual OOM; Browserslist: Uncaught crash 
+cross-spawn                high      fix=True | Regular Expression Denial of Service (ReDoS) in cross-spawn
+esbuild                    moderate  fix=True | esbuild enables any website to send any requests to the development server and read the response
+flatted                    high      fix=True | flatted vulnerable to unbounded recursion DoS in parse() revive phase; Prototype Pollution via parse() in NodeJS flatted
+glob                       high      fix=True | glob CLI: Command injection via -c/--cmd executes matches with shell:true; Glob: AbortSignal cancellation bypass allows post-timeout filesys
+js-yaml                    high      fix=True | js-yaml has prototype pollution in merge (<<); JS-YAML: Quadratic-complexity DoS in merge key handling via repeated aliases; js-yaml: YAML m
+minimatch                  high      fix=True | minimatch has a ReDoS via repeated wildcards with non-matching literal in pattern; minimatch has a ReDoS via repeated wildcards with non-mat
+nanoid                     high      fix=True | Predictable results in nanoid generation when given non-integer values; nanoid: non-secure generators can loop indefinitely with negative si
+picomatch                  high      fix=True | Picomatch: Method Injection in POSIX Character Classes causes incorrect Glob Matching; Picomatch has a ReDoS vulnerability via extglob quant
+postcss                    high      fix=True | PostCSS has XSS via Unescaped </style> in its CSS Stringify Output; PostCSS: Arbitrary file read and information disclosure via attacker-con
+postcss-selector-parser    moderate  fix=True | postcss-selector-parser allows denial of service through uncontrolled AST recursion; PostCSS: Quadratic complexity in flat selector parsing 
+rollup                     high      fix=True | Rollup 4 has Arbitrary File Write via Path Traversal
+source-map-js              high      fix=True | source-map-js allows event-loop denial of service through indexed source-map section offsets
+tinypool                   critical  fix=vitest@5.1.1 semverMajor=True | Tinypool: Prototype Pollution gadget in worker options leads to Remote Code Execution; Tinypool: Prototype Pollution Gadget to RCE in run() 
+vite                       high      fix=True | Websites were able to send any requests to the development server and read the response in vite; Vite bypasses server.fs.deny when using ?ra
+vitest                     critical  fix=vitest@5.1.1 semverMajor=True | When Vitest UI server is listening, arbitrary file can be read and executed
+yaml                       moderate  fix=True | yaml is vulnerable to Stack Overflow via deeply nested YAML collections

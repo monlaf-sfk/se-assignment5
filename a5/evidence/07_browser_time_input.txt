@@ -1,0 +1,27 @@
+# Real-browser check of <input type="time"> behaviour (Firefox 158, macOS)
+# Page: http://localhost:4173/ (npx vite preview of build from commit a817034)
+# Tool: Firefox DevTools MCP evaluate_script, run by Claude Code on 2026-11-18
+
+Script:
+() => { const inputs=[...document.querySelectorAll('input[type=time]')]; const end=inputs[1];
+  const r={ua:navigator.userAgent, count:inputs.length};
+  for (const v of ['24:00','23:59','00:00','11:00:30']) { end.value=v; r['set '+v]=JSON.stringify(end.value); }
+  end.value='12:00'; const icon=document.querySelector('link[rel=icon]'); r.icon=icon&&icon.href;
+  r.labelsLinked=inputs.map(i=>i.labels.length); return r; }
+
+Result:
+{
+  "ua": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:158.0) Gecko/20100101 Firefox/158.0",
+  "count": 2,
+  "set 24:00": "\"\"",          <- browser sanitizes 24:00 to empty: a booking ending at midnight cannot be entered
+  "set 23:59": "\"23:59\"",
+  "set 00:00": "\"00:00\"",
+  "set 11:00:30": "\"11:00:30\"", <- browser keeps seconds; hhmmToMinutes() regex ^(\d{2}):(\d{2})$ would reject it
+  "icon": "http://localhost:4173/vite.svg",
+  "labelsLinked": [0, 0]         <- neither time input has an associated <label>
+}
+
+Notes:
+- Seconds only appear if a value with seconds is set programmatically or the input's step < 60;
+  the default picker (step 60) produces HH:MM. Seconds case therefore stays "plausible", not confirmed.
+- Only Firefox was tested. Chrome/Safari not executed.

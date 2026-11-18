@@ -1,0 +1,11 @@
+# Favicon / external asset check against production preview (npx vite preview --port 4173)
+
+$ curl -s -o /dev/null -w '%{http_code} %{content_type}' http://localhost:4173/
+200 text/html
+
+$ curl -s -o /dev/null -w '%{http_code} %{content_type}' http://localhost:4173/vite.svg
+200 text/html
+
+$ ls dist
+assets
+index.html
